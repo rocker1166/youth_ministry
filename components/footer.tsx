@@ -1,44 +1,54 @@
 "use client"
 
 import Link from "next/link"
-import { Phone, Mail, MapPin, Twitter, Facebook, Linkedin, Instagram } from "lucide-react"
+import { Phone, Mail, MapPin, Twitter, Facebook, Linkedin, Instagram, ArrowRight, Youtube, ExternalLink, Github } from "lucide-react"
 import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 const footerSections = [
   {
-    title: "Organization",
+    title: "IYA",
     links: [
-      { label: "About Us", href: "/about" },
-      { label: "Leadership", href: "/leadership" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
-    ],
-  },
-  {
-    title: "Programs",
-    links: [
-      { label: "Skills Training", href: "/programs/skills" },
-      { label: "Leadership", href: "/programs/leadership" },
-      { label: "Entrepreneurship", href: "/programs/entrepreneurship" },
-      { label: "Scholarships", href: "/programs/scholarships" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Documentation", href: "/resources" },
-      { label: "Guidelines", href: "/guidelines" },
+      { label: "About us", href: "/about" },
       { label: "FAQs", href: "/faqs" },
-      { label: "Blog", href: "/blog" },
+      { label: "Leadership", href: "/leadership" },
+      { label: "Workshop Feedback", href: "/feedback" },
+      { label: "Contact Us", href: "/contact" },
     ],
   },
   {
-    title: "Legal",
+    title: "PROGRAMS",
     links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Contact", href: "/contact" },
-      { label: "Grievance", href: "/grievance" },
+      { label: "Overview", href: "/programs" },
+      { label: "Skills Training", href: "/programs/skills" },
+      { label: "Leadership Development", href: "/programs/leadership" },
+      { label: "Entrepreneurship", href: "/programs/entrepreneurship" },
+    ],
+  },
+  {
+    title: "RESOURCES",
+    links: [
+      { label: "Overview", href: "/resources" },
+      { label: "Documentation", href: "/resources/docs" },
+      { label: "Guidelines", href: "/guidelines" },
+    ],
+  },
+  {
+    title: "EVENTS",
+    links: [
+      { label: "Upcoming Events", href: "/events" },
+      { label: "Skill Development", href: "/events?category=skill" },
+      { label: "Workshops", href: "/events?category=workshop" },
+      { label: "Related Links", href: "/events/links" },
+    ],
+  },
+  {
+    title: "TOOLS",
+    links: [
+      { label: "Apply Now", href: "/apply", icon: true },
+      { label: "Student Portal", href: "/portal", icon: true },
+      { label: "Accessibility", href: "/accessibility" },
+      { label: "Resources Library", href: "/library" },
     ],
   },
 ]
@@ -50,6 +60,7 @@ interface SiteSettings {
 export function Footer() {
   const [settings, setSettings] = useState<SiteSettings>({})
   const [lastUpdated, setLastUpdated] = useState("")
+  const [visitorCount, setVisitorCount] = useState("261771")
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -75,62 +86,92 @@ export function Footer() {
   }, [])
 
   const socialLinks = [
-    { icon: Twitter, url: settings.social_twitter, label: "Twitter" },
-    { icon: Facebook, url: settings.social_facebook, label: "Facebook" },
-    { icon: Linkedin, url: settings.social_linkedin, label: "LinkedIn" },
-    { icon: Instagram, url: settings.social_instagram, label: "Instagram" },
+    { icon: Linkedin, url: settings.social_linkedin || "#", label: "LinkedIn" },
+    { icon: Facebook, url: settings.social_facebook || "#", label: "Facebook" },
+    { icon: Twitter, url: settings.social_twitter || "#", label: "Twitter" },
+    { icon: Youtube, url: settings.social_youtube || "#", label: "YouTube" },
+    { icon: Github, url: settings.social_github || "#", label: "Github" },
+    { icon: Instagram, url: settings.social_instagram || "#", label: "Instagram" },
   ]
 
   return (
     <footer className="bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Main Footer Content */}
-        <div className="grid md:grid-cols-5 gap-8 mb-12">
+      {/* Need Support CTA Section */}
+      <div className="border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">Need Support?</h2>
+              <p className="text-white/70 text-lg">Reach out to us and we will get back to you</p>
+            </div>
+            <Button
+              asChild
+              size="lg"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-full px-8"
+            >
+              <Link href="/contact" className="flex items-center gap-2">
+                Get in touch <ArrowRight size={18} />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                IYA
+          <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-linear-to-br from-primary to-primary-700 flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-xl">IYA</span>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold">Institute of</span>
-                <span className="text-xs font-semibold">Youth Affairs</span>
+              <div>
+                <h3 className="text-lg font-bold mb-1">Institute of Youth Affairs</h3>
+                <p className="text-sm text-white/60">One Portal For All Government Services</p>
               </div>
             </div>
-            <p className="text-sm text-white/70 text-balance">
-              Empowering India's youth through holistic development and skill enhancement programs.
-            </p>
-            <div className="space-y-3 text-sm">
-              {settings.phone && (
-                <div className="flex items-center gap-2 text-white/80">
-                  <Phone size={16} />
-                  <span>{settings.phone}</span>
-                </div>
-              )}
-              {settings.email && (
-                <div className="flex items-center gap-2 text-white/80">
-                  <Mail size={16} />
-                  <span>{settings.email}</span>
-                </div>
-              )}
-              {settings.address && (
-                <div className="flex items-start gap-2 text-white/80">
-                  <MapPin size={16} className="mt-0.5" />
-                  <span>{settings.address}</span>
-                </div>
-              )}
+
+            {/* Social Links */}
+            <div className="flex flex-wrap gap-3">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full border-2 border-white/30 hover:border-white hover:bg-white/10 flex items-center justify-center transition-all duration-300"
+                  title={link.label}
+                >
+                  <link.icon size={18} />
+                </a>
+              ))}
+            </div>
+
+            {/* Visitor Count & Last Updated */}
+            <div className="space-y-1 text-sm">
+              <p className="text-white/50">Last updated: {lastUpdated || "9/11/2025"}</p>
+              <p className="text-white/70">
+                <span className="font-semibold">Visitor:</span> {visitorCount}
+              </p>
             </div>
           </div>
 
-          {/* Footer Links */}
+          {/* Footer Links Sections */}
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
-              <h4 className="font-semibold text-white">{section.title}</h4>
-              <ul className="space-y-2">
+              <h4 className="font-bold text-white text-sm tracking-wider">{section.title}</h4>
+              <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-sm text-white/70 hover:text-white transition-colors">
+                    <Link
+                      href={link.href}
+                      className="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1"
+                    >
                       {link.label}
+                      {link.icon && <ExternalLink size={12} className="opacity-50" />}
                     </Link>
                   </li>
                 ))}
@@ -138,28 +179,26 @@ export function Footer() {
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex flex-col sm:flex-row gap-4 text-sm text-white/60">
-            <p>© 2025 Institute of Youth Affairs. All rights reserved.</p>
-            {lastUpdated && <p className="text-white/50">Last updated: {lastUpdated}</p>}
-          </div>
-          <div className="flex gap-4">
-            {socialLinks.map((link) =>
-              link.url ? (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/60 hover:text-white transition-colors"
-                  title={link.label}
-                >
-                  <link.icon size={18} />
-                </a>
-              ) : null,
-            )}
+      {/* Bottom Copyright Bar */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <div className="flex flex-col md:flex-row items-center gap-2 text-white/60">
+              <p>© 2025 - Copyright Institute of Youth Affairs. All rights reserved.</p>
+              <span className="hidden md:inline">|</span>
+              <p>Powered by Ministry of Youth Affairs & Sports</p>
+            </div>
+            <div className="flex gap-4 text-white/60">
+              <Link href="/terms" className="hover:text-white transition-colors">
+                Terms & Conditions
+              </Link>
+              <span>|</span>
+              <Link href="/privacy" className="hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>

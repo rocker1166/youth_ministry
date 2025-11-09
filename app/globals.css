@@ -194,4 +194,22 @@
   .gov-section-title {
     @apply text-3xl md:text-4xl font-bold text-gray-900 mb-4;
   }
+
+  /* Auto-scrolling animation for partner ministries ticker */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
 }

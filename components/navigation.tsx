@@ -22,6 +22,7 @@ export function Navigation() {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Programs", href: "/programs" },
+    { label: "Events", href: "/events" },
     { label: "News", href: "/news" },
     { label: "Resources", href: "/resources" },
     { label: "Contact", href: "/contact" },
@@ -73,9 +74,13 @@ export function Navigation() {
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-700 flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">IYA</span>
-              </div>
+             <Image
+                src="/logo/home_logo.jpg"
+                alt="Institute of Youth Affairs Logo"
+                width={50}
+                height={50}
+                className="w-12 h-12 rounded-lg"
+              />
               <div className="flex flex-col">
                 <span className="text-lg font-bold text-gray-900 leading-tight">Institute of</span>
                 <span className="text-base font-semibold text-primary leading-tight">Youth Affairs</span>

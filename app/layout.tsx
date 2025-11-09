@@ -3,9 +3,6 @@ import type { Metadata } from "next"
 import { Noto_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { Chatbot } from "@/components/chatbot"
 
 const notoSans = Noto_Sans({
   subsets: ["latin", "latin-ext"],
@@ -30,10 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${notoSans.variable} font-sans antialiased`}>
-        <Navigation />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <Chatbot />
+        {children}
         <Analytics />
       </body>
     </html>
