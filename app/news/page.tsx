@@ -1,7 +1,5 @@
 "use client"
 
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, User, ArrowRight } from "lucide-react"
@@ -79,9 +77,7 @@ const allNews = [
 
 export default function NewsPage() {
   return (
-    <>
-      <Navigation />
-      <main className="min-h-screen">
+    <main className="min-h-screen">
         {/* Hero Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-7xl mx-auto text-center">
@@ -184,7 +180,5 @@ export default function NewsPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
   )
 }

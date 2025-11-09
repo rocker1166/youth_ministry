@@ -49,17 +49,53 @@ export function Chatbot() {
     setInput("")
     setIsLoading(true)
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Call the chat API
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map((msg) => ({
+              role: msg.sender === "user" ? "user" : "assistant",
+              content: msg.text,
+            })),
+            {
+              role: "user",
+              content: input,
+            },
+          ],
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to get response")
+      }
+
+      const data = await response.json()
+
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "Thank you for your question. Please visit our website or contact our support team for detailed information.",
+        id: data.id || (Date.now() + 1).toString(),
+        text: data.content || "I apologize, but I couldn't generate a response. Please try again.",
         sender: "bot",
         timestamp: new Date(),
       }
+
       setMessages((prev) => [...prev, botMessage])
+    } catch (error) {
+      console.error("Chat error:", error)
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Sorry, I'm having trouble connecting. Please try again later or contact our support team.",
+        sender: "bot",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   if (!isOpen) {

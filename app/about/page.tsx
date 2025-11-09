@@ -1,7 +1,5 @@
 "use client"
 
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Target, Heart, Eye } from "lucide-react"
 
@@ -33,9 +31,7 @@ export default function AboutPage() {
   ]
 
   return (
-    <>
-      <Navigation />
-      <main className="min-h-screen">
+    <main className="min-h-screen">
         {/* Hero Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-7xl mx-auto">
@@ -98,7 +94,5 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
   )
 }

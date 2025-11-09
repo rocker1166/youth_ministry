@@ -2,8 +2,6 @@
 
 import type React from "react"
 
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -62,9 +60,7 @@ export default function ContactPage() {
   ]
 
   return (
-    <>
-      <Navigation />
-      <main className="min-h-screen">
+    <main className="min-h-screen">
         {/* Hero Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-7xl mx-auto text-center">
@@ -168,7 +164,5 @@ export default function ContactPage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </>
   )
 }

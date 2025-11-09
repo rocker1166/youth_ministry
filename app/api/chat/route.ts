@@ -1,5 +1,5 @@
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+import { google } from "@ai-sdk/google"
 
 const systemPrompt = `You are a helpful government portal assistant for the Institute of Youth Affairs. 
 You provide information about:
@@ -25,14 +25,13 @@ export async function POST(req: Request) {
 
   try {
     const response = await generateText({
-      model: openai("gpt-4-turbo"),
+      model: google("gemini-2.5-flash"),
       system: systemPrompt + "\n\n" + faqContext,
       messages: messages.map((msg: any) => ({
         role: msg.role,
         content: msg.content,
       })),
       temperature: 0.7,
-      maxTokens: 500,
     })
 
     return Response.json({

@@ -17,7 +17,12 @@ export default function AdminDashboard() {
   const [news, setNews] = useState([])
   const [gallery, setGallery] = useState([])
   const [users, setUsers] = useState([])
-  const [analytics, setAnalytics] = useState(null)
+  const [analytics, setAnalytics] = useState<{
+    totalUsers: number
+    totalEvents: number
+    totalRegistrations: number
+    publishedNews: number
+  } | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
 
   // Event form state
