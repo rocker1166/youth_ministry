@@ -1,89 +1,139 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Zap, Users, Briefcase, BookOpen, Heart, Globe } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 const programs = [
   {
-    id: 1,
+    id: "leadership",
     title: "Leadership Development",
-    description:
-      "Comprehensive programs to develop leadership qualities and decision-making skills in young professionals.",
-    icon: Zap,
-    color: "bg-primary/10 text-primary",
+    shortTitle: "Leadership Development",
+    fullDescription:
+      "Comprehensive programs to develop leadership qualities, decision-making skills, and professional growth in young individuals. Our leadership training focuses on building confidence, communication, and team management abilities.",
+    image1: "/global-partnership.jpg",
+    image2: "/funding-success.jpg",
+    link: "/programs/leadership",
   },
   {
-    id: 2,
+    id: "skill-enhancement",
     title: "Skill Enhancement",
-    description:
-      "Technical and soft skills training programs aligned with industry requirements and future job market.",
-    icon: Briefcase,
-    color: "bg-accent/10 text-accent",
+    shortTitle: "Skill Enhancement",
+    fullDescription:
+      "Technical and soft skills training programs aligned with industry requirements and future job market demands. Enhance your capabilities through hands-on workshops, certifications, and practical learning experiences.",
+    image1: "/digital-training.jpg",
+    image2: "/entrepreneurship-success.jpg",
+    link: "/programs/skills",
   },
   {
-    id: 3,
-    title: "Entrepreneurship",
-    description: "Mentorship and funding support for young entrepreneurs to turn their ideas into successful ventures.",
-    icon: Users,
-    color: "bg-green-100 text-green-700",
+    id: "entrepreneurship",
+    title: "Entrepreneurship Program",
+    shortTitle: "Entrepreneurship",
+    fullDescription:
+      "Mentorship and funding support for young entrepreneurs to turn their ideas into successful ventures. Get access to industry experts, startup resources, and networking opportunities to launch your business.",
+    image1: "/funding-success.jpg",
+    image2: "/digital-launch.jpg",
+    link: "/programs/entrepreneurship",
   },
   {
-    id: 4,
+    id: "career-counseling",
     title: "Career Counseling",
-    description: "Expert guidance for career planning, job placement assistance, and professional development.",
-    icon: BookOpen,
-    color: "bg-blue-100 text-blue-700",
+    shortTitle: "Career Counseling",
+    fullDescription:
+      "Expert guidance for career planning, job placement assistance, and professional development. Our counselors help you identify your strengths, explore career paths, and achieve your professional goals.",
+    image1: "/funding-success.jpg",
+    image2: "/digital-launch.jpg",
+    link: "/programs/career",
   },
   {
-    id: 5,
-    title: "Social Impact",
-    description: "Community service and social responsibility initiatives fostering youth participation.",
-    icon: Heart,
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: 6,
-    title: "Global Exchange",
-    description: "International exposure and exchange programs to build global perspective and cultural awareness.",
-    icon: Globe,
-    color: "bg-purple-100 text-purple-700",
+    id: "social-impact",
+    title: "Social Impact Initiatives",
+    shortTitle: "Social Impact",
+    fullDescription:
+      "Community service and social responsibility initiatives fostering youth participation in nation-building activities. Contribute to society through volunteering, awareness campaigns, and community development projects.",
+    image1: "/funding-success.jpg",
+    image2: "/global-partnership.jpg",
+    link: "/programs/social-impact",
   },
 ]
 
 export function Programs() {
+  const [activeTab, setActiveTab] = useState(programs[0].id)
+  const activeProgram = programs.find((p) => p.id === activeTab) || programs[0]
+
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+        {/* Header with Title and Tabs Inline */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 whitespace-nowrap">
             Our <span className="text-primary">Programs</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
-            Comprehensive youth development programs designed to build skills, confidence, and opportunities
-          </p>
+          
+          {/* Tabs */}
+          <div className="flex flex-wrap gap-2">
+            {programs.map((program) => (
+              <button
+                key={program.id}
+                onClick={() => setActiveTab(program.id)}
+                className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
+                  activeTab === program.id
+                    ? "bg-black text-white"
+                    : "bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                {program.shortTitle}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {programs.map((program) => {
-            const IconComponent = program.icon
-            return (
-              <Card key={program.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg ${program.color} flex items-center justify-center mb-4`}>
-                    <IconComponent size={24} />
-                  </div>
-                  <CardTitle className="text-xl">{program.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <CardDescription className="text-base text-foreground/70">{program.description}</CardDescription>
-                  <Button variant="outline" className="w-full gap-2 bg-transparent">
-                    Learn More
-                  </Button>
-                </CardContent>
-              </Card>
-            )
-          })}
+        {/* Content - Compact Layout */}
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
+          {/* Left - Two Images Overlapped */}
+          <div className="relative h-[400px] md:h-[500px]">
+            {/* Back Image - Computer Screen */}
+            <div className="absolute top-0 left-0 w-[70%] h-[70%] rounded-xl overflow-hidden shadow-2xl z-10">
+              <Image
+                src={activeProgram.image1}
+                alt={`${activeProgram.title} - Image 1`}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            {/* Front Image - Overlapping Papers/Colors */}
+            <div className="absolute bottom-0 right-0 w-[60%] h-[60%] rounded-xl overflow-hidden shadow-2xl z-20">
+              <Image
+                src={activeProgram.image2}
+                alt={`${activeProgram.title} - Image 2`}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Right - Content */}
+          <div className="space-y-4">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+              {activeProgram.title.split(' ').slice(0, -1).join(' ')}{' '}
+              <span className="text-primary">{activeProgram.title.split(' ').slice(-1)}</span>
+            </h3>
+            <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+              {activeProgram.fullDescription}
+            </p>
+            <div>
+              <Link href={activeProgram.link}>
+                <Button
+                  variant="outline"
+                  className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-6 py-2 rounded-lg font-medium text-sm"
+                >
+                  Know more
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

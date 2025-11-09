@@ -104,9 +104,7 @@ export function Navigation() {
 
           {/* CTA Button & Mobile Menu */}
           <div className="flex items-center gap-3">
-            <Button className="hidden md:inline-flex bg-primary hover:bg-primary-700 text-white shadow-sm">
-              Apply Now
-            </Button>
+           
             
             {/* Mobile Menu Button */}
             <button
@@ -133,11 +131,7 @@ export function Navigation() {
                   {item.label}
                 </Link>
               ))}
-              <div className="px-4 pt-4">
-                <Button className="w-full bg-primary hover:bg-primary-700 text-white">
-                  Apply Now
-                </Button>
-              </div>
+             
             </div>
           </div>
         )}
