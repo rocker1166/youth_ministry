@@ -5,14 +5,102 @@ import { Programs } from "@/components/programs"
 import { Impact } from "@/components/impact"
 import { News } from "@/components/news"
 import { CTA } from "@/components/cta"
+import UpcomingEvents from "@/components/upcoming-events"
+import MinistryGrid from "@/components/ministry-grid"
+import GalleryPreview from "@/components/gallery-preview"
+import { Card, CardContent } from "@/components/ui/card"
+import { Users, Target, Award, TrendingUp } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
       <Hero />
-      <Programs />
-      <Impact />
-      <News />
+
+      {/* About Snippet Section */}
+      <section className="py-16 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              About the <span className="text-primary">Institute</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              The Institute of Youth Affairs is a Digital India initiative dedicated to enhancing youth development
+              through holistic personality development programs, skill enhancement, and career guidance across India.
+            </p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <CardContent className="p-6 text-center">
+                <Users className="w-10 h-10 text-primary mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">100K+</div>
+                <p className="text-sm text-gray-600">Youth Trained</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+              <CardContent className="p-6 text-center">
+                <Target className="w-10 h-10 text-green-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">50+</div>
+                <p className="text-sm text-gray-600">Programs</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <CardContent className="p-6 text-center">
+                <Award className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">28</div>
+                <p className="text-sm text-gray-600">States Covered</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <CardContent className="p-6 text-center">
+                <TrendingUp className="w-10 h-10 text-orange-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">95%</div>
+                <p className="text-sm text-gray-600">Success Rate</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Ministry/Initiatives Grid */}
+      <MinistryGrid />
+
+      {/* Upcoming Events Section */}
+      <UpcomingEvents />
+
+      {/* Programs Section */}
+      <section className="bg-white">
+        <Programs />
+      </section>
+
+      {/* News Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Latest <span className="text-primary">News & Updates</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Stay informed with the latest announcements, success stories, and program launches.
+            </p>
+          </div>
+          <News />
+        </div>
+      </section>
+
+      {/* Gallery Preview */}
+      <GalleryPreview />
+
+      {/* Impact/Stats Section */}
+      <section className="py-16 bg-primary-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Impact />
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <CTA />
     </div>
   )

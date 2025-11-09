@@ -9,24 +9,41 @@ This repository contains the front-end web application for the Institute of Yout
 - Styling: Tailwind CSS (utility classes present in code)
 
 ## What I changed recently
-- **Fixed duplicate headers/footers** on all pages except the homepage. The site uses a root layout (`app/layout.tsx`) that renders the global `Navigation` and `Footer` components once for all pages. I removed the duplicate `Navigation` and `Footer` from:
-  - `app/about/page.tsx`
-  - `app/programs/page.tsx`
-  - `app/news/page.tsx`
-  - `app/contact/page.tsx`
-  - `app/resources/page.tsx`
-- **Connected chatbot to API**: The chatbot component now makes real API calls to `/api/chat` endpoint using Google Gemini AI for intelligent responses.
-- **Fixed TypeScript errors**: Resolved type issues in `app/admin/page.tsx` (analytics state) and `app/api/chat/route.ts` (removed unsupported parameters).
+- **Redesigned landing page with UX4G government design guidelines**:
+  - Implemented government-style navigation with top bar (email, phone, language switcher)
+  - Sticky responsive navbar with smooth scroll effects
+  - Hero section with UX4G-inspired layout, floating stats, and government badge
+  - Added all requested sections: Hero, About snippet, Upcoming Events, Ministries/Initiatives grid, Programs, News, Gallery preview, Impact stats
+  - Government-style color palette (green primary #0b663b, maintaining existing theme)
+  - Professional card designs with hover effects and proper spacing
+  - Responsive design for mobile, tablet, and desktop
+  
+- **UX4G Design Pattern Features**:
+  - Two-tier navigation (top bar + main nav)
+  - Government portal aesthetics with clean, accessible layout
+  - Icon-based ministry/initiative cards with proper categorization
+  - Enhanced event cards with status badges and detailed information
+  - Professional gallery with category tags and smooth hover transitions
+  - Stats section with color-coded metrics
+  
+- **Fixed duplicate headers/footers** on all pages except the homepage
+- **Connected chatbot to API**: Real API calls to `/api/chat` using Google Gemini AI
+- **Fixed TypeScript errors**: Resolved type issues in admin page and chat API
 
 Files changed:
-- `app/page.tsx` — removed `Navigation` and `Footer` imports and JSX (layout provides them)
-- `app/about/page.tsx` — removed duplicate header/footer
-- `app/programs/page.tsx` — removed duplicate header/footer
-- `app/news/page.tsx` — removed duplicate header/footer  
-- `app/contact/page.tsx` — removed duplicate header/footer
-- `app/resources/page.tsx` — removed duplicate header/footer
-- `components/chatbot.tsx` — connected to `/api/chat` API with real AI responses
-- `app/api/chat/route.ts` — switched to Google Gemini model
+- `components/navigation.tsx` — Complete redesign with UX4G government style, two-tier nav, sticky header
+- `components/hero.tsx` — UX4G-inspired hero with floating stats, government badges, professional layout
+- `app/page.tsx` — Comprehensive landing page with all sections (Hero, About, Events, Ministries, Programs, News, Gallery, Impact, CTA)
+- `components/ministry-grid.tsx` — Icon-based cards with Lucide icons, hover effects, color-coded categories
+- `components/upcoming-events.tsx` — Enhanced event cards with status badges, icons, detailed information
+- `components/gallery-preview.tsx` — Professional gallery with category tags, gradient overlays, smooth animations
+- `app/globals.css` — Added UX4G utility classes for government design system
+- `app/about/page.tsx` — Removed duplicate header/footer
+- `app/programs/page.tsx` — Removed duplicate header/footer
+- `app/news/page.tsx` — Removed duplicate header/footer  
+- `app/contact/page.tsx` — Removed duplicate header/footer
+- `app/resources/page.tsx` — Removed duplicate header/footer
+- `components/chatbot.tsx` — Connected to `/api/chat` API with real AI responses
 
 ## Prerequisites
 - Node.js (LTS recommended, >=16)

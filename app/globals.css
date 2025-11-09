@@ -99,6 +99,14 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-50: #f0f9f4;
+  --color-primary-100: #dcf2e4;
+  --color-primary-200: #bce5cd;
+  --color-primary-400: var(--gov-primary-400);
+  --color-primary-600: var(--gov-primary-600);
+  --color-primary-700: #095230;
+  --color-primary-800: #074225;
+  --color-primary-900: #053419;
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -166,5 +174,24 @@
 @supports (font-size: 1cqw) {
   body {
     font-size: clamp(1rem, 1cqw, 1.125rem);
+  }
+}
+
+/* UX4G Government Design System Utilities */
+@layer utilities {
+  .gov-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .gov-card {
+    @apply bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+  }
+  
+  .gov-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .gov-section-title {
+    @apply text-3xl md:text-4xl font-bold text-gray-900 mb-4;
   }
 }
