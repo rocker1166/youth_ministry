@@ -196,25 +196,7 @@ export default function AdminLogin() {
               </Button>
             </form>
 
-            {/* Development Credentials */}
-            <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-              <div className="flex gap-2">
-                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-blue-900 mb-1">Development Credentials</p>
-                  <div className="space-y-0.5">
-                    <p className="text-xs text-blue-800">
-                      <span className="font-medium">Username:</span>{" "}
-                      <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">admin</code>
-                    </p>
-                    <p className="text-xs text-blue-800">
-                      <span className="font-medium">Password:</span>{" "}
-                      <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">admin123</code>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+    
 
             {/* Footer Warning */}
             <div className="mt-4 pt-4 border-t border-neutral-200">

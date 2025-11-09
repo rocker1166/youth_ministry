@@ -5,45 +5,90 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { event_id, user_id, email, name, phone } = body
+    const { event_id, email, name, phone } = body
 
-    // First, create/upsert user
-    const { data: userData, error: userError } = await supabase
+    // First, check if user exists by email
+    const { data: existingUser } = await supabase
       .from("users")
-      .upsert(
-        {
-          id: user_id,
-          email,
-          name,
-          phone,
-        },
-        { onConflict: "email" },
-      )
-      .select()
+      .select("id")
+      .eq("email", email)
       .single()
 
-    if (userError && userError.code !== "PGRST116") {
-      return NextResponse.json({ error: userError.message }, { status: 500 })
+    let userId: string
+
+    if (existingUser) {
+      // User exists, use their ID
+      userId = existingUser.id
+    } else {
+      // Create new user - let Supabase generate UUID
+      const { data: newUser, error: userError } = await supabase
+        .from("users")
+        .insert([
+          {
+            email,
+            name,
+            phone,
+          },
+        ])
+        .select()
+        .single()
+
+      if (userError) {
+        console.error("User creation error:", userError)
+        return NextResponse.json({ error: userError.message }, { status: 500 })
+      }
+
+      userId = newUser.id
     }
 
-    // Then register for event
+    // Check if already registered for this event
+    const { data: existingRegistration } = await supabase
+      .from("event_registrations")
+      .select("id")
+      .eq("event_id", event_id)
+      .eq("user_id", userId)
+      .single()
+
+    if (existingRegistration) {
+      return NextResponse.json({ error: "You are already registered for this event" }, { status: 400 })
+    }
+
+    // Register for event
     const { data, error } = await supabase
       .from("event_registrations")
       .insert([
         {
           event_id,
-          user_id: userData?.id || user_id,
+          user_id: userId,
           status: "confirmed",
         },
       ])
       .select()
 
     if (error) {
+      console.error("Registration error:", error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     // Increment event registered count
-    await supabase.rpc("increment_event_registrations", { event_id })
+    // First get current count
+    const { data: eventData } = await supabase
+      .from("events")
+      .select("registered_count")
+      .eq("id", event_id)
+      .single()
+
+    if (eventData) {
+      const newCount = (eventData.registered_count || 0) + 1
+      const { error: updateError } = await supabase
+        .from("events")
+        .update({ registered_count: newCount })
+        .eq("id", event_id)
+
+      if (updateError) {
+        console.error("Count update error:", updateError)
+      }
+    }
 
     return NextResponse.json(
       {
@@ -53,6 +98,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     )
   } catch (err) {
+    console.error("Registration failed:", err)
     return NextResponse.json({ error: "Failed to register for event" }, { status: 400 })
   }
 }

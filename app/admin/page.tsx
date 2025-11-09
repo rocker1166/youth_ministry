@@ -3,15 +3,18 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Plus, Edit2, Trash2, Download, BarChart3, Upload, X, Image as ImageIcon, LogOut } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { LogOut, X, Download } from "lucide-react"
 import { Alert } from "@/components/ui/alert"
 import { createClient } from "@supabase/supabase-js"
+import { EventsTab } from "@/components/admin/events-tab"
+import { NewsTab } from "@/components/admin/news-tab"
+import { GalleryTab } from "@/components/admin/gallery-tab"
+import { AnalyticsTab } from "@/components/admin/analytics-tab"
+import { RegistrationDialog } from "@/components/admin/registration-dialog"
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -51,6 +54,11 @@ export default function AdminDashboard() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [alertMessage, setAlertMessage] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [selectedEventRegistrations, setSelectedEventRegistrations] = useState<any[]>([])
+  const [loadingRegistrations, setLoadingRegistrations] = useState(false)
+  const [registrationsDialogOpen, setRegistrationsDialogOpen] = useState(false)
+  const [currentEventId, setCurrentEventId] = useState<string>("")
+  const [currentEventTitle, setCurrentEventTitle] = useState<string>("")
 
   // Logout function
   const handleLogout = async () => {
@@ -244,15 +252,60 @@ export default function AdminDashboard() {
   }
 
   const handleDeleteEvent = async (id: string) => {
-    if (confirm("Are you sure you want to delete this event?")) {
-      setLoading(true)
-      try {
-        await fetch(`/api/admin/events?id=${id}`, { method: "DELETE" })
-        setAlertMessage({ type: "success", message: "Event deleted successfully!" })
+    if (!confirm("Are you sure you want to delete this event?")) return
+
+    try {
+      const res = await fetch(`/api/admin/events?id=${id}`, { method: "DELETE" })
+      if (res.ok) {
+        setAlertMessage({ type: "success", message: "Event deleted!" })
         fetchEvents()
-      } finally {
-        setLoading(false)
       }
+    } catch (err) {
+      setAlertMessage({ type: "error", message: "Failed to delete event" })
+    }
+  }
+
+  // Fetch event registrations
+  const fetchEventRegistrations = async (eventId: string, eventTitle: string) => {
+    setLoadingRegistrations(true)
+    setRegistrationsDialogOpen(true)
+    setCurrentEventId(eventId)
+    setCurrentEventTitle(eventTitle)
+    try {
+      const res = await fetch(`/api/admin/events/${eventId}/registrations`)
+      if (res.ok) {
+        const data = await res.json()
+        setSelectedEventRegistrations(data)
+      } else {
+        setAlertMessage({ type: "error", message: "Failed to fetch registrations" })
+      }
+    } catch (err) {
+      setAlertMessage({ type: "error", message: "Failed to fetch registrations" })
+    } finally {
+      setLoadingRegistrations(false)
+    }
+  }
+
+  // Export registrations to CSV
+  const exportRegistrations = async (eventId: string) => {
+    try {
+      const res = await fetch(`/api/admin/events/${eventId}/registrations`, {
+        method: "POST",
+      })
+      if (res.ok) {
+        const blob = await res.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `event-registrations-${eventId}.csv`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        setAlertMessage({ type: "success", message: "Registrations exported successfully!" })
+      }
+    } catch (err) {
+      setAlertMessage({ type: "error", message: "Failed to export registrations" })
     }
   }
 
@@ -437,481 +490,49 @@ export default function AdminDashboard() {
 
           {/* Events Tab */}
           <TabsContent value="events" className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">
-                {editingId ? "Edit Event" : "Create Event"}
-              </h2>
-              <form
-                onSubmit={
-                  editingId ? (e) => {
-                    e.preventDefault()
-                    handleUpdateEvent(editingId)
-                  } : handleCreateEvent
-                }
-                className="space-y-4"
-              >
-                <div>
-                  <label className="block text-sm font-medium mb-2">Event Title *</label>
-                  <Input
-                    placeholder="Event Title"
-                    value={eventForm.title}
-                    onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Description *</label>
-                  <Textarea
-                    placeholder="Event Description"
-                    value={eventForm.description}
-                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Start Date & Time *</label>
-                    <Input
-                      type="datetime-local"
-                      value={eventForm.start_date}
-                      onChange={(e) => setEventForm({ ...eventForm, start_date: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">End Date & Time *</label>
-                    <Input
-                      type="datetime-local"
-                      value={eventForm.end_date}
-                      onChange={(e) => setEventForm({ ...eventForm, end_date: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Location *</label>
-                    <Input
-                      placeholder="Location"
-                      value={eventForm.location}
-                      onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Category *</label>
-                    <select
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
-                      value={eventForm.category}
-                      onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
-                      required
-                      aria-label="Event Category"
-                    >
-                      <option value="">Select Category</option>
-                      <option value="leadership">Leadership</option>
-                      <option value="training">Training</option>
-                      <option value="entrepreneurship">Entrepreneurship</option>
-                      <option value="workshop">Workshop</option>
-                      <option value="seminar">Seminar</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Capacity *</label>
-                  <Input
-                    placeholder="Capacity"
-                    type="number"
-                    value={eventForm.capacity}
-                    onChange={(e) => setEventForm({ ...eventForm, capacity: e.target.value })}
-                    required
-                    min="1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Event Image</label>
-                  <div className="flex gap-4 items-start">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, "events")}
-                      disabled={uploadingImage}
-                      className="flex-1"
-                    />
-                    {uploadingImage && <Loader2 className="animate-spin h-5 w-5" />}
-                  </div>
-                  {eventForm.image_url && (
-                    <div className="mt-2 relative w-32 h-32">
-                      <img
-                        src={eventForm.image_url}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1"
-                        onClick={() => setEventForm({ ...eventForm, image_url: "" })}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  {editingId && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setEditingId(null)
-                        setEventForm({
-                          title: "",
-                          description: "",
-                          start_date: "",
-                          end_date: "",
-                          location: "",
-                          category: "",
-                          capacity: "",
-                          image_url: "",
-                        })
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="flex-1 bg-primary hover:bg-primary-600"
-                  >
-                    {loading ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
-                    {editingId ? "Update Event" : "Create Event"}
-                  </Button>
-                </div>
-              </form>
-            </Card>
-
-            {/* Events List */}
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">All Events ({events.length})</h3>
-              <div className="space-y-4">
-                {loading && events.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Loader2 className="animate-spin h-8 w-8 mx-auto mb-2" />
-                    <p>Loading events...</p>
-                  </div>
-                ) : events.length === 0 ? (
-                  <p className="text-center text-neutral-500 py-8">No events yet. Create your first event!</p>
-                ) : (
-                  events.map((event) => (
-                    <Card key={event.id} className="p-4">
-                      <div className="flex gap-4">
-                        {event.image_url && (
-                          <img
-                            src={event.image_url}
-                            alt={event.title}
-                            className="w-24 h-24 object-cover rounded-lg"
-                          />
-                        )}
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-bold text-lg">{event.title}</h4>
-                              <p className="text-sm text-neutral-600">{event.location}</p>
-                              <p className="text-sm text-neutral-500">
-                                {new Date(event.start_date).toLocaleDateString("en-IN")} •{" "}
-                                {event.registered_count || 0}/{event.capacity} registered
-                              </p>
-                              <span className="inline-block mt-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full capitalize">
-                                {event.category}
-                              </span>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => loadEventForEdit(event)}
-                              >
-                                <Edit2 className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDeleteEvent(event.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </Card>
+            <EventsTab
+              events={events}
+              eventForm={eventForm}
+              editingId={editingId}
+              loading={loading}
+              uploadingImage={uploadingImage}
+              setEventForm={setEventForm}
+              handleCreateEvent={handleCreateEvent}
+              handleUpdateEvent={handleUpdateEvent}
+              handleDeleteEvent={handleDeleteEvent}
+              handleFileUpload={handleFileUpload}
+              loadEventForEdit={loadEventForEdit}
+              fetchEventRegistrations={fetchEventRegistrations}
+              setEditingId={setEditingId}
+            />
           </TabsContent>
 
           {/* News Tab */}
           <TabsContent value="news" className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Create News Article</h2>
-              <form onSubmit={handleCreateNews} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Article Title *</label>
-                  <Input
-                    placeholder="Article Title"
-                    value={newsForm.title}
-                    onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Content *</label>
-                  <Textarea
-                    placeholder="Article Content"
-                    value={newsForm.content}
-                    onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })}
-                    rows={8}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Excerpt</label>
-                  <Textarea
-                    placeholder="Short summary (optional)"
-                    value={newsForm.excerpt}
-                    onChange={(e) => setNewsForm({ ...newsForm, excerpt: e.target.value })}
-                    rows={2}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Category *</label>
-                  <select
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    value={newsForm.category}
-                    onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })}
-                    required
-                    aria-label="News Category"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="announcement">Announcement</option>
-                    <option value="update">Update</option>
-                    <option value="achievement">Achievement</option>
-                    <option value="event">Event Report</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Featured Image</label>
-                  <div className="flex gap-4 items-start">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, "news")}
-                      disabled={uploadingImage}
-                      className="flex-1"
-                    />
-                    {uploadingImage && <Loader2 className="animate-spin h-5 w-5" />}
-                  </div>
-                  {newsForm.featured_image && (
-                    <div className="mt-2 relative w-32 h-32">
-                      <img
-                        src={newsForm.featured_image}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1"
-                        onClick={() => setNewsForm({ ...newsForm, featured_image: "" })}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <Button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-600">
-                  {loading ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
-                  Create Article
-                </Button>
-              </form>
-            </Card>
-
-            {/* News List */}
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">Published Articles ({news.length})</h3>
-              <div className="space-y-4">
-                {news.length === 0 ? (
-                  <p className="text-center text-neutral-500 py-8">No news articles yet. Create your first article!</p>
-                ) : (
-                  news.map((article: any) => (
-                    <Card key={article.id} className="p-4">
-                      <div className="flex gap-4">
-                        {article.featured_image && (
-                          <img
-                            src={article.featured_image}
-                            alt={article.title}
-                            className="w-24 h-24 object-cover rounded-lg"
-                          />
-                        )}
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-bold text-lg">{article.title}</h4>
-                              <p className="text-sm text-neutral-600 line-clamp-2">{article.excerpt}</p>
-                              <span className="inline-block mt-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full capitalize">
-                                {article.category}
-                              </span>
-                            </div>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteNews(article.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </Card>
+            <NewsTab
+              news={news}
+              newsForm={newsForm}
+              loading={loading}
+              uploadingImage={uploadingImage}
+              setNewsForm={setNewsForm}
+              handleCreateNews={handleCreateNews}
+              handleDeleteNews={handleDeleteNews}
+              handleFileUpload={handleFileUpload}
+            />
           </TabsContent>
 
           {/* Gallery Tab */}
           <TabsContent value="gallery" className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Upload Gallery Item</h2>
-              <form onSubmit={handleCreateGallery} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Title *</label>
-                  <Input
-                    placeholder="Title"
-                    value={galleryForm.title}
-                    onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Description</label>
-                  <Textarea
-                    placeholder="Description"
-                    value={galleryForm.description}
-                    onChange={(e) => setGalleryForm({ ...galleryForm, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Category *</label>
-                  <select
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    value={galleryForm.category}
-                    onChange={(e) => setGalleryForm({ ...galleryForm, category: e.target.value })}
-                    required
-                    aria-label="Gallery Category"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="events">Events</option>
-                    <option value="workshops">Workshops</option>
-                    <option value="awards">Awards</option>
-                    <option value="facilities">Facilities</option>
-                    <option value="activities">Activities</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Upload Image/Video *</label>
-                  <div className="flex gap-4 items-start">
-                    <Input
-                      type="file"
-                      accept="image/*,video/*"
-                      onChange={(e) => handleFileUpload(e, "gallery")}
-                      disabled={uploadingImage}
-                      className="flex-1"
-                    />
-                    {uploadingImage && <Loader2 className="animate-spin h-5 w-5" />}
-                  </div>
-                  {galleryForm.image_url && (
-                    <div className="mt-2 relative w-48 h-48">
-                      <img
-                        src={galleryForm.image_url}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1"
-                        onClick={() => setGalleryForm({ ...galleryForm, image_url: "" })}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading || !galleryForm.image_url}
-                  className="w-full bg-primary hover:bg-primary-600"
-                >
-                  {loading ? <Loader2 className="animate-spin mr-2" /> : <Upload className="mr-2" />}
-                  Upload to Gallery
-                </Button>
-              </form>
-            </Card>
-
-            {/* Gallery Grid */}
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">Gallery Items ({gallery.length})</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {gallery.length === 0 ? (
-                  <p className="col-span-full text-center text-neutral-500 py-8">No gallery items yet. Upload your first photo!</p>
-                ) : (
-                  gallery.map((item: any) => (
-                    <Card key={item.id} className="relative group">
-                      <img
-                        src={item.image_url}
-                        alt={item.title}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      <div className="p-2">
-                        <h4 className="font-medium text-sm truncate">{item.title}</h4>
-                        <p className="text-xs text-neutral-500 capitalize">{item.category}</p>
-                      </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteGallery(item.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </Card>
+            <GalleryTab
+              gallery={gallery}
+              galleryForm={galleryForm}
+              loading={loading}
+              uploadingImage={uploadingImage}
+              setGalleryForm={setGalleryForm}
+              handleCreateGallery={handleCreateGallery}
+              handleDeleteGallery={handleDeleteGallery}
+              handleFileUpload={handleFileUpload}
+            />
           </TabsContent>
 
           {/* Users Tab */}
@@ -953,63 +574,20 @@ export default function AdminDashboard() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
-            {analytics ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-neutral-600 text-sm">Total Users</p>
-                      <p className="text-3xl font-bold text-primary">{analytics.totalUsers}</p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-primary opacity-50" />
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-neutral-600 text-sm">Total Events</p>
-                      <p className="text-3xl font-bold text-primary">{analytics.totalEvents}</p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-primary opacity-50" />
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-neutral-600 text-sm">Total Registrations</p>
-                      <p className="text-3xl font-bold text-primary">{analytics.totalRegistrations}</p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-primary opacity-50" />
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-neutral-600 text-sm">Published News</p>
-                      <p className="text-3xl font-bold text-primary">{analytics.publishedNews}</p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-primary opacity-50" />
-                  </div>
-                </Card>
-              </div>
-            ) : (
-              <Card className="p-6 text-center">
-                <Loader2 className="animate-spin h-8 w-8 mx-auto mb-2" />
-                <p>Loading analytics...</p>
-              </Card>
-            )}
-
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">Registration Trends</h3>
-              <div className="h-64 bg-neutral-100 rounded flex items-center justify-center text-neutral-600">
-                Chart will be rendered here with recharts
-              </div>
-            </Card>
+            <AnalyticsTab analytics={analytics} />
           </TabsContent>
         </Tabs>
+
+        {/* Event Registrations Dialog */}
+        <RegistrationDialog
+          open={registrationsDialogOpen}
+          onOpenChange={setRegistrationsDialogOpen}
+          loading={loadingRegistrations}
+          registrations={selectedEventRegistrations}
+          eventTitle={currentEventTitle}
+          eventId={currentEventId}
+          onExport={exportRegistrations}
+        />
       </div>
     </div>
   )

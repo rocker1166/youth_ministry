@@ -65,10 +65,7 @@ export default function EventRegistration() {
       const response = await fetch("/api/registrations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          user_id: `user-${Date.now()}`, // Generate temporary user ID
-        }),
+        body: JSON.stringify(formData), // Send formData without user_id
       })
 
       if (!response.ok) {

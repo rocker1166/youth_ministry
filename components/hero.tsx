@@ -63,10 +63,14 @@ export function Hero() {
 
             {/* Quick Links - Government Portal Style */}
             <div className="flex flex-wrap gap-4 pt-6 text-sm">
-              <Link href="/programs" className="text-primary hover:underline font-medium flex items-center gap-1">
+              <a 
+                href="/INSTITUTE_OF_YOUTH_AFFAIRS.pdf" 
+                download
+                className="text-primary hover:underline font-medium flex items-center gap-1"
+              >
                 <Download size={16} />
                 Program Brochure
-              </Link>
+              </a>
               <span className="text-gray-300">|</span>
               <Link href="/events" className="text-primary hover:underline font-medium">
                 Upcoming Events
@@ -108,8 +112,19 @@ export function Hero() {
               </div>
               {/* Overlay Badge */}
               <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg">
-                <p className="text-sm font-semibold text-gray-900 mb-1">Digital India Initiative</p>
-                <p className="text-xs text-gray-600">Ministry of Youth Affairs & Sports</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white shadow-md">
+                    <img 
+                      src="/logo/home_logo.jpg" 
+                      alt="Institute Logo"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Digital India Initiative</p>
+                    <p className="text-xs text-gray-600">Ministry of Youth Affairs & Sports</p>
+                  </div>
+                </div>
               </div>
             </div>
 

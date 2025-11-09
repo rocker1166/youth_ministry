@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
@@ -9,6 +10,7 @@ import Image from "next/image"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,7 +27,6 @@ export function Navigation() {
     { label: "Events", href: "/events" },
     { label: "News", href: "/news" },
     { label: "Resources", href: "/resources" },
-    { label: "Contact", href: "/contact" },
   ]
 
   return (
@@ -91,21 +92,29 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-md ${
+                    isActive
+                      ? "text-primary"
+                      : "text-gray-700 hover:text-primary hover:bg-gray-50"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"></span>
+                  )}
+                </Link>
+              )
+            })}
           </div>
 
           {/* CTA Button & Mobile Menu */}
           <div className="flex items-center gap-3">
-           
-            
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -121,17 +130,23 @@ export function Navigation() {
         {isOpen && (
           <div className="lg:hidden py-4 border-t border-gray-200 animate-in slide-in-from-top">
             <div className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-             
+              {navItems.map((item) => {
+                const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`block px-4 py-3 text-base font-medium rounded-md transition-colors ${
+                      isActive
+                        ? "text-primary bg-primary/10 border-l-4 border-primary"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-primary"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}

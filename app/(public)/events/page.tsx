@@ -97,111 +97,139 @@ export default function EventsPage() {
   const filtered = selectedCategory === "all" ? events : events.filter((e) => e.category === selectedCategory)
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-neutral-900 mb-8">Events & Workshops</h1>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Events & Workshops</h1>
+          <p className="text-sm text-muted-foreground">Discover opportunities to learn, grow, and connect with fellow youth leaders</p>
+        </div>
 
-        {/* Filter */}
-        <div className="mb-8 flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedCategory("all")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedCategory === "all"
-                ? "bg-gov-primary text-white"
-                : "bg-white text-neutral-700 border border-neutral-200 hover:border-gov-primary"
-            }`}
-          >
-            All Events
-          </button>
-          <button
-            onClick={() => setSelectedCategory("leadership")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedCategory === "leadership"
-                ? "bg-gov-primary text-white"
-                : "bg-white text-neutral-700 border border-neutral-200 hover:border-gov-primary"
-            }`}
-          >
-            Leadership
-          </button>
-          <button
-            onClick={() => setSelectedCategory("training")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedCategory === "training"
-                ? "bg-gov-primary text-white"
-                : "bg-white text-neutral-700 border border-neutral-200 hover:border-gov-primary"
-            }`}
-          >
-            Training
-          </button>
-          <button
-            onClick={() => setSelectedCategory("entrepreneurship")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedCategory === "entrepreneurship"
-                ? "bg-gov-primary text-white"
-                : "bg-white text-neutral-700 border border-neutral-200 hover:border-gov-primary"
-            }`}
-          >
-            Entrepreneurship
-          </button>
+        {/* Filter Tabs */}
+        <div className="mb-6">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-1.5 shadow-md inline-flex flex-wrap gap-1.5">
+            <button
+              onClick={() => setSelectedCategory("all")}
+              className={`px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 ${
+                selectedCategory === "all"
+                  ? "bg-primary text-white shadow-md scale-105"
+                  : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-700"
+              }`}
+            >
+              All Events
+            </button>
+            <button
+              onClick={() => setSelectedCategory("leadership")}
+              className={`px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 ${
+                selectedCategory === "leadership"
+                  ? "bg-primary text-white shadow-md scale-105"
+                  : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-700"
+              }`}
+            >
+              Leadership
+            </button>
+            <button
+              onClick={() => setSelectedCategory("training")}
+              className={`px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 ${
+                selectedCategory === "training"
+                  ? "bg-primary text-white shadow-md scale-105"
+                  : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-700"
+              }`}
+            >
+              Training
+            </button>
+            <button
+              onClick={() => setSelectedCategory("entrepreneurship")}
+              className={`px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 ${
+                selectedCategory === "entrepreneurship"
+                  ? "bg-primary text-white shadow-md scale-105"
+                  : "text-foreground hover:bg-slate-100 dark:hover:bg-slate-700"
+              }`}
+            >
+              Entrepreneurship
+            </button>
+          </div>
         </div>
 
         {/* Events Grid */}
         {loading ? (
-          <div className="text-center py-12">
+          <div className="text-center py-20">
             <Loader2 className="animate-spin h-12 w-12 mx-auto text-primary mb-4" />
-            <p className="text-neutral-600">Loading events...</p>
+            <p className="text-muted-foreground text-lg">Loading events...</p>
           </div>
         ) : (
           <div className="grid gap-6">
             {filtered.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg">
-                <p className="text-neutral-600 text-lg">No events found in this category.</p>
+              <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-xl shadow-md">
+                <Calendar className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground text-lg font-medium">No events found in this category.</p>
+                <p className="text-sm text-muted-foreground mt-2">Check back soon for upcoming events!</p>
               </div>
             ) : (
               filtered.map((event) => (
                 <div
                   key={event.id}
-                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                  className="bg-white dark:bg-slate-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20"
                 >
-                  <div className="grid md:grid-cols-3 gap-6 p-6">
-                    <img
-                      src={event.image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"}
-                      alt={event.title}
-                      className="w-full h-48 object-cover rounded-lg md:col-span-1"
-                    />
-                    <div className="md:col-span-2">
-                      <h3 className="text-2xl font-bold text-neutral-900 mb-2">{event.title}</h3>
-                      <p className="text-neutral-600 mb-4 line-clamp-2">{event.description}</p>
+                  <div className="grid md:grid-cols-3 gap-4 p-5">
+                    {/* Event Image */}
+                    <div className="md:col-span-1">
+                      <div className="relative h-48 md:h-full rounded-lg overflow-hidden group">
+                        <img
+                          src={event.image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"}
+                          alt={event.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-primary/90 text-white px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                            {event.category}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                      <div className="space-y-2 mb-6 text-sm">
-                        <div className="flex items-center gap-2 text-neutral-700">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(event.start_date).toLocaleDateString("en-IN", {
-                            weekday: "long",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                    {/* Event Details */}
+                    <div className="md:col-span-2 flex flex-col">
+                      <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2 hover:text-primary transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                        {event.description}
+                      </p>
+
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-foreground/80">
+                          <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span className="font-medium">
+                            {new Date(event.start_date).toLocaleDateString("en-IN", {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2 text-neutral-700">
-                          <MapPin className="w-4 h-4" />
-                          {event.location}
+                        <div className="flex items-center gap-2 text-sm text-foreground/80">
+                          <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span>{event.location}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-neutral-700">
-                          <Users className="w-4 h-4" />
-                          {event.registered_count || 0} / {event.capacity} registered
+                        <div className="flex items-center gap-2 text-sm text-foreground/80">
+                          <Users className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span>
+                            <span className="font-semibold text-primary">{event.registered_count || 0}</span> / {event.capacity} registered
+                          </span>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2.5 mt-auto">
                         <Link
                           href={`/events/${event.id}`}
-                          className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
+                          className="px-5 py-2.5 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-semibold shadow-md hover:shadow-lg"
                         >
                           View Details
                         </Link>
                         <Link
                           href={`/events/register?event=${event.id}`}
-                          className="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-neutral-50 transition-colors font-medium"
+                          className="px-5 py-2.5 text-sm border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all font-semibold"
                         >
                           Register Now
                         </Link>
