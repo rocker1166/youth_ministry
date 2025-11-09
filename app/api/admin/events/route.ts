@@ -85,8 +85,17 @@ export async function DELETE(request: Request) {
 
   if (!id) return Response.json({ error: "ID required" }, { status: 400 })
 
+  // Get registration count before deletion for confirmation message
+  const { data: registrations } = await supabase
+    .from("event_registrations")
+    .select("id")
+    .eq("event_id", id)
+
+  const registrationCount = registrations?.length || 0
+
+  // Delete event (cascades to delete all registrations automatically due to ON DELETE CASCADE)
   const { error } = await supabase.from("events").delete().eq("id", id)
 
   if (error) return Response.json({ error: error.message }, { status: 400 })
-  return Response.json({ success: true })
+  return Response.json({ success: true, deletedRegistrations: registrationCount })
 }

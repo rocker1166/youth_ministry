@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { LogOut, X, Download } from "lucide-react"
-import { Alert } from "@/components/ui/alert"
+import { LogOut, Download, RefreshCwIcon } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 import { createClient } from "@supabase/supabase-js"
 import { EventsTab } from "@/components/admin/events-tab"
 import { NewsTab } from "@/components/admin/news-tab"
@@ -39,6 +39,7 @@ interface Event {
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const { toast } = useToast()
   const [tab, setTab] = useState("events")
   const [loading, setLoading] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
@@ -53,7 +54,6 @@ export default function AdminDashboard() {
   } | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [alertMessage, setAlertMessage] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [selectedEventRegistrations, setSelectedEventRegistrations] = useState<any[]>([])
   const [loadingRegistrations, setLoadingRegistrations] = useState(false)
   const [registrationsDialogOpen, setRegistrationsDialogOpen] = useState(false)
@@ -121,7 +121,11 @@ export default function AdminDashboard() {
 
       if (error) {
         console.error("Upload error:", error)
-        setAlertMessage({ type: "error", message: `Upload failed: ${error.message}` })
+        toast({
+          variant: "destructive",
+          title: "Upload Failed",
+          description: error.message,
+        })
         return null
       }
 
@@ -133,7 +137,11 @@ export default function AdminDashboard() {
       return publicUrl
     } catch (err) {
       console.error("Upload error:", err)
-      setAlertMessage({ type: "error", message: "Upload failed" })
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "An error occurred while uploading the file.",
+      })
       return null
     } finally {
       setUploadingImage(false)
@@ -195,7 +203,10 @@ export default function AdminDashboard() {
       })
 
       if (res.ok) {
-        setAlertMessage({ type: "success", message: "Event created successfully!" })
+        toast({
+          title: "Success",
+          description: "Event created successfully!",
+        })
         setEventForm({
           title: "",
           description: "",
@@ -209,10 +220,18 @@ export default function AdminDashboard() {
         fetchEvents()
       } else {
         const error = await res.json()
-        setAlertMessage({ type: "error", message: error.error || "Failed to create event" })
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.error || "Failed to create event",
+        })
       }
-    } catch (err) {
-      setAlertMessage({ type: "error", message: "Failed to create event" })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create event",
+      })
     } finally {
       setLoading(false)
     }
@@ -232,7 +251,10 @@ export default function AdminDashboard() {
       })
 
       if (res.ok) {
-        setAlertMessage({ type: "success", message: "Event updated successfully!" })
+        toast({
+          title: "Success",
+          description: "Event updated successfully!",
+        })
         setEditingId(null)
         setEventForm({
           title: "",
@@ -252,16 +274,28 @@ export default function AdminDashboard() {
   }
 
   const handleDeleteEvent = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event?")) return
+    if (!confirm("Are you sure you want to delete this event? All registrations for this event will also be permanently deleted.")) return
 
     try {
       const res = await fetch(`/api/admin/events?id=${id}`, { method: "DELETE" })
       if (res.ok) {
-        setAlertMessage({ type: "success", message: "Event deleted!" })
+        const data = await res.json()
+        const registrationCount = data.deletedRegistrations || 0
+        
+        toast({
+          title: "Event Deleted",
+          description: registrationCount > 0 
+            ? `Event and ${registrationCount} registration${registrationCount !== 1 ? 's' : ''} deleted successfully.`
+            : "Event deleted successfully.",
+        })
         fetchEvents()
       }
     } catch (err) {
-      setAlertMessage({ type: "error", message: "Failed to delete event" })
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete event",
+      })
     }
   }
 
@@ -277,10 +311,18 @@ export default function AdminDashboard() {
         const data = await res.json()
         setSelectedEventRegistrations(data)
       } else {
-        setAlertMessage({ type: "error", message: "Failed to fetch registrations" })
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch registrations",
+        })
       }
     } catch (err) {
-      setAlertMessage({ type: "error", message: "Failed to fetch registrations" })
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch registrations",
+      })
     } finally {
       setLoadingRegistrations(false)
     }
@@ -302,10 +344,17 @@ export default function AdminDashboard() {
         a.click()
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
-        setAlertMessage({ type: "success", message: "Registrations exported successfully!" })
+        toast({
+          title: "Success",
+          description: "Registrations exported successfully!",
+        })
       }
     } catch (err) {
-      setAlertMessage({ type: "error", message: "Failed to export registrations" })
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to export registrations",
+      })
     }
   }
 
@@ -326,7 +375,10 @@ export default function AdminDashboard() {
       })
 
       if (res.ok) {
-        setAlertMessage({ type: "success", message: "News article created successfully!" })
+        toast({
+          title: "Success",
+          description: "News article created successfully!",
+        })
         setNewsForm({
           title: "",
           content: "",
@@ -344,7 +396,10 @@ export default function AdminDashboard() {
   const handleDeleteNews = async (id: string) => {
     if (confirm("Are you sure you want to delete this news article?")) {
       await fetch(`/api/admin/news?id=${id}`, { method: "DELETE" })
-      setAlertMessage({ type: "success", message: "News deleted successfully!" })
+      toast({
+        title: "Success",
+        description: "News deleted successfully!",
+      })
       fetchNews()
     }
   }
@@ -361,7 +416,10 @@ export default function AdminDashboard() {
       })
 
       if (res.ok) {
-        setAlertMessage({ type: "success", message: "Gallery item created successfully!" })
+        toast({
+          title: "Success",
+          description: "Gallery item created successfully!",
+        })
         setGalleryForm({
           title: "",
           description: "",
@@ -378,7 +436,10 @@ export default function AdminDashboard() {
   const handleDeleteGallery = async (id: string) => {
     if (confirm("Are you sure you want to delete this gallery item?")) {
       await fetch(`/api/admin/gallery?id=${id}`, { method: "DELETE" })
-      setAlertMessage({ type: "success", message: "Gallery item deleted successfully!" })
+      toast({
+        title: "Success",
+        description: "Gallery item deleted successfully!",
+      })
       fetchGallery()
     }
   }
@@ -396,7 +457,10 @@ export default function AdminDashboard() {
       } else if (type === "gallery") {
         setGalleryForm({ ...galleryForm, image_url: url })
       }
-      setAlertMessage({ type: "success", message: "File uploaded successfully!" })
+      toast({
+        title: "Success",
+        description: "File uploaded successfully!",
+      })
     }
   }
 
@@ -464,21 +528,6 @@ export default function AdminDashboard() {
           <p className="text-neutral-600">Manage events, news, gallery, users and view analytics</p>
         </div>
 
-        {/* Alert Messages */}
-        {alertMessage && (
-          <Alert
-            variant={alertMessage.type === "error" ? "destructive" : "default"}
-            className="mb-4"
-          >
-            <div className="flex justify-between items-center">
-              <span>{alertMessage.message}</span>
-              <Button variant="ghost" size="sm" onClick={() => setAlertMessage(null)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </Alert>
-        )}
-
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="events">Events</TabsTrigger>
@@ -541,7 +590,7 @@ export default function AdminDashboard() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Registered Users</h2>
                 <Button onClick={fetchUsers} className="bg-primary hover:bg-primary-600">
-                  <Download className="h-4 w-4 mr-2" /> Refresh
+                  <RefreshCwIcon className="h-4 w-4 mr-2" /> Refresh
                 </Button>
               </div>
 
