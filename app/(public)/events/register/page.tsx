@@ -31,9 +31,20 @@ export default function EventRegistration() {
     name: "",
     email: "",
     phone: "",
-    event_id: new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("event") || "",
+    event_id: "",
     message: "",
   })
+
+  // Get event_id from URL on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search)
+      const eventId = urlParams.get("event")
+      if (eventId) {
+        setFormData((prev) => ({ ...prev, event_id: eventId }))
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -60,6 +71,13 @@ export default function EventRegistration() {
     e.preventDefault()
     setLoading(true)
     setError("")
+
+    // Validate event_id
+    if (!formData.event_id || formData.event_id.trim() === "") {
+      setError("Event ID is missing. Please select an event from the events page.")
+      setLoading(false)
+      return
+    }
 
     try {
       const response = await fetch("/api/registrations", {
@@ -100,6 +118,20 @@ export default function EventRegistration() {
   return (
     <div className="min-h-screen bg-linear-to-b from-neutral-100 to-white py-12 px-4">
       <div className="max-w-3xl mx-auto">
+        {/* No Event Warning */}
+        {!event && !loading && formData.event_id === "" && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <div>
+              <p className="font-semibold">No Event Selected</p>
+              <p className="text-sm">Please select an event from the events page to register.</p>
+              <Link href="/events" className="text-sm underline mt-2 inline-block">
+                Go to Events Page
+              </Link>
+            </div>
+          </Alert>
+        )}
+
         {/* Event Info Card */}
         {event && (
           <Card className="p-6 mb-8 bg-white border-primary/20">

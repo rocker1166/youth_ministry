@@ -7,6 +7,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { event_id, email, name, phone } = body
 
+    // Validate required fields
+    if (!event_id || event_id.trim() === "") {
+      return NextResponse.json({ error: "Event ID is required" }, { status: 400 })
+    }
+
+    if (!email || !name || !phone) {
+      return NextResponse.json({ error: "Name, email, and phone are required" }, { status: 400 })
+    }
+
     // First, check if user exists by email
     const { data: existingUser } = await supabase
       .from("users")
