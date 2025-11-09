@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Download, ExternalLink } from "lucide-react"
 import Link from "next/link"
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { TypingText } from "./typing-text"
 
 export function Hero() {
   return (
@@ -14,7 +16,7 @@ export function Hero() {
         }}></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="space-y-8">
@@ -30,14 +32,16 @@ export function Hero() {
             {/* Main Heading - Government Style */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Building{" "}
-                <span className="text-primary relative">
-                  Leaders
-                  <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
-                    <path d="M0 4C40 4 160 4 200 4" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
-                  </svg>
+                <span className="block">Building</span>
+                <span className="text-primary block">
+                  <TypingText 
+                    texts={["Innovators", "Entrepreneurs", "Changemakers", "Visionaries"]}
+                    typingSpeed={120}
+                    deletingSpeed={80}
+                    pauseDuration={2500}
+                  />
                 </span>
-                {" "}for Tomorrow
+                <span className="block">for Tomorrow</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl">
                 The Institute of Youth Affairs is dedicated to developing holistic personality development programs, skill
@@ -93,12 +97,13 @@ export function Hero() {
           {/* Hero Image - Government Portal Style */}
           <div className="relative">
             {/* Main Image Container */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl ">
               <div className="aspect-[4/3] bg-gradient-to-br from-primary-100 to-primary-200">
-                <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop"
-                  alt="Youth empowerment and development"
-                  className="w-full h-full object-cover"
+                <DotLottieReact
+                  src="https://lottie.host/b5f4184c-4ed3-44fe-b163-d32ab7aca0f5/Yq6Fep5PI8.lottie"
+                  loop
+                  autoplay
+                  className="w-full h-full"
                 />
               </div>
               {/* Overlay Badge */}
@@ -108,25 +113,9 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Floating Elements */}
-            <div className="absolute -top-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl hidden lg:block">
-              <div className="text-4xl font-bold">95%</div>
-              <p className="text-sm mt-1">Success Rate</p>
-            </div>
+          
 
-            <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl hidden lg:block border-2 border-primary">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">ISO Certified</p>
-                  <p className="text-xs text-gray-600">Quality Programs</p>
-                </div>
-              </div>
-            </div>
+           
           </div>
         </div>
       </div>
