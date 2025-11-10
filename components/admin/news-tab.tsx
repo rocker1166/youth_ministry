@@ -1,11 +1,19 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
+import dynamic from "next/dynamic"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Plus, Trash2, X } from "lucide-react"
+import { Loader2, Plus, Trash2, X, Eye } from "lucide-react"
+import "@uiw/react-md-editor/markdown-editor.css"
+
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor"),
+  { ssr: false }
+)
 
 interface NewsTabProps {
   news: any[]
@@ -15,6 +23,8 @@ interface NewsTabProps {
     excerpt: string
     category: string
     featured_image: string
+    author: string
+    tags: string[]
   }
   loading: boolean
   uploadingImage: boolean
@@ -34,11 +44,45 @@ export function NewsTab({
   handleDeleteNews,
   handleFileUpload,
 }: NewsTabProps) {
+  const [previewMode, setPreviewMode] = useState(false)
+
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Create News Article</h2>
-        <form onSubmit={handleCreateNews} className="space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Create News Article</h2>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setPreviewMode(!previewMode)}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            {previewMode ? "Edit Mode" : "Preview Mode"}
+          </Button>
+        </div>
+
+        {previewMode ? (
+          <div className="space-y-4 border rounded-lg p-6 bg-gray-50">
+            <div>
+              <h3 className="text-3xl font-bold mb-2">{newsForm.title || "Untitled Article"}</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Category: <span className="font-semibold capitalize">{newsForm.category || "N/A"}</span>
+              </p>
+              {newsForm.featured_image && (
+                <img
+                  src={newsForm.featured_image}
+                  alt="Featured"
+                  className="w-full max-w-2xl h-64 object-cover rounded-lg mb-4"
+                />
+              )}
+              {newsForm.excerpt && (
+                <p className="text-lg text-gray-700 italic mb-4">{newsForm.excerpt}</p>
+              )}
+              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: newsForm.content || "*No content yet*" }} />
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleCreateNews} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Article Title *</label>
             <Input
@@ -50,14 +94,21 @@ export function NewsTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Content *</label>
-            <Textarea
-              placeholder="Article Content"
-              value={newsForm.content}
-              onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })}
-              rows={8}
-              required
-            />
+            <label className="block text-sm font-medium mb-2">Content (Markdown) *</label>
+            <div data-color-mode="light">
+              <MDEditor
+                value={newsForm.content}
+                onChange={(value) => setNewsForm({ ...newsForm, content: value || "" })}
+                preview="edit"
+                height={400}
+                commands={[
+                  // Add custom commands for image insertion
+                ]}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Supports Markdown formatting. Use ![alt text](image-url) to insert images.
+            </p>
           </div>
 
           <div>
@@ -84,7 +135,31 @@ export function NewsTab({
               <option value="update">Update</option>
               <option value="achievement">Achievement</option>
               <option value="event">Event Report</option>
+              <option value="program launch">Program Launch</option>
+              <option value="partnership">Partnership</option>
+              <option value="success story">Success Story</option>
             </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Author</label>
+            <Input
+              placeholder="Author name (e.g., Ministry of Youth Affairs)"
+              value={newsForm.author}
+              onChange={(e) => setNewsForm({ ...newsForm, author: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Tags</label>
+            <Input
+              placeholder="Enter tags separated by commas (e.g., digital, education, youth)"
+              value={newsForm.tags.join(", ")}
+              onChange={(e) => setNewsForm({ ...newsForm, tags: e.target.value.split(",").map(tag => tag.trim()).filter(tag => tag) })}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Separate multiple tags with commas
+            </p>
           </div>
 
           <div>
@@ -124,6 +199,7 @@ export function NewsTab({
             Create Article
           </Button>
         </form>
+        )}
       </Card>
 
       {/* News List */}

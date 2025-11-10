@@ -90,6 +90,8 @@ export default function AdminDashboard() {
     excerpt: "",
     category: "",
     featured_image: "",
+    author: "",
+    tags: [] as string[],
   })
 
   // Gallery form state
@@ -368,7 +370,7 @@ export default function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...newsForm,
-          slug: newsForm.title.toLowerCase().replace(/\s+/g, "-"),
+          slug: newsForm.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
           status: "published",
           published_at: new Date().toISOString(),
         }),
@@ -385,6 +387,8 @@ export default function AdminDashboard() {
           excerpt: "",
           category: "",
           featured_image: "",
+          author: "",
+          tags: [],
         })
         fetchNews()
       }
