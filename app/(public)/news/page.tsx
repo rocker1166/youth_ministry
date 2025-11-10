@@ -233,21 +233,23 @@ export default function NewsPage() {
 
             {/* Recent News Sidebar - Next 3 Most Recent */}
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-foreground mb-4">Recent Updates</h3>
-              {recentNews.map((article) => (
-                <Link key={article.id} href={`/news/${article.id}`}>
-                  <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
-                    <CardContent className="p-4">
-                      <Badge variant="outline" className="mb-2 text-xs">{article.category}</Badge>
-                      <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-snug">{article.title}</h4>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Calendar size={12} />
-                        {formatDate(article.published_at)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+              <h3 className="text-lg font-bold text-foreground mb-6">Recent Updates</h3>
+              <div className="space-y-4">
+                {recentNews.map((article) => (
+                  <Link key={article.id} href={`/news/${article.id}`} className="block">
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
+                      <CardContent className="p-4">
+                        <Badge variant="outline" className="mb-2 text-xs">{article.category}</Badge>
+                        <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-snug">{article.title}</h4>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Calendar size={12} />
+                          {formatDate(article.published_at)}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 

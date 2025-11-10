@@ -329,8 +329,8 @@ Applications are open for Q1 2025 funding cycle!
   },
 }
 
-// Recent updates (dummy data)
-const recentUpdates = [
+// Recent updates dummy fallback
+const dummyRecentUpdates = [
   {
     id: "4",
     title: "New Scholarship Program for Underprivileged Youth",
@@ -354,6 +354,7 @@ const recentUpdates = [
 export default function NewsDetailPage() {
   const params = useParams()
   const [newsData, setNewsData] = useState<any>(null)
+  const [recentNews, setRecentNews] = useState<any[]>(dummyRecentUpdates)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
@@ -388,6 +389,34 @@ export default function NewsDetailPage() {
     }
 
     fetchNews()
+  }, [params.id])
+
+  // Fetch recent news for sidebar
+  useEffect(() => {
+    const fetchRecentNews = async () => {
+      try {
+        const response = await fetch('/api/news?limit=4')
+        
+        if (response.ok) {
+          const data = await response.json()
+          // Filter out current article and take only 3 items
+          const filtered = data
+            .filter((article: any) => article.id !== params.id)
+            .slice(0, 3)
+          
+          if (filtered.length > 0) {
+            setRecentNews(filtered)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching recent news:', error)
+        // Keep dummy fallback data
+      }
+    }
+
+    if (params.id) {
+      fetchRecentNews()
+    }
   }, [params.id])
 
   if (loading) {
@@ -640,12 +669,12 @@ export default function NewsDetailPage() {
             {/* Sidebar - Recent Updates */}
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
-                <h3 className="text-lg font-bold text-foreground mb-4">
+                <h3 className="text-lg font-bold text-foreground mb-6">
                   Recent Updates
                 </h3>
-                <div className="space-y-3">
-                  {recentUpdates.map((article) => (
-                    <Link key={article.id} href={`/news/${article.id}`}>
+                <div className="space-y-4">
+                  {recentNews.map((article) => (
+                    <Link key={article.id} href={`/news/${article.id}`} className="block">
                       <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
                         <CardContent className="p-4">
                           <Badge variant="outline" className="mb-2 text-xs">
