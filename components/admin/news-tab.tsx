@@ -1,19 +1,17 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import dynamic from "next/dynamic"
+import { useState, KeyboardEvent } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus, Trash2, X, Eye } from "lucide-react"
-import "@uiw/react-md-editor/markdown-editor.css"
-
-const MDEditor = dynamic(
-  () => import("@uiw/react-md-editor"),
-  { ssr: false }
-)
+import {
+  EditorProvider,
+  type Editor,
+} from "@/components/ui/shadcn-io/editor"
 
 interface NewsTabProps {
   news: any[]
@@ -23,7 +21,6 @@ interface NewsTabProps {
     excerpt: string
     category: string
     featured_image: string
-    author: string
     tags: string[]
   }
   loading: boolean
@@ -45,6 +42,21 @@ export function NewsTab({
   handleFileUpload,
 }: NewsTabProps) {
   const [previewMode, setPreviewMode] = useState(false)
+  const [tagInput, setTagInput] = useState("")
+
+  const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault()
+      if (!newsForm.tags.includes(tagInput.trim())) {
+        setNewsForm({ ...newsForm, tags: [...newsForm.tags, tagInput.trim()] })
+      }
+      setTagInput("")
+    }
+  }
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setNewsForm({ ...newsForm, tags: newsForm.tags.filter(tag => tag !== tagToRemove) })
+  }
 
   return (
     <div className="space-y-6">
@@ -94,20 +106,19 @@ export function NewsTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Content (Markdown) *</label>
-            <div data-color-mode="light">
-              <MDEditor
-                value={newsForm.content}
-                onChange={(value) => setNewsForm({ ...newsForm, content: value || "" })}
-                preview="edit"
-                height={400}
-                commands={[
-                  // Add custom commands for image insertion
-                ]}
-              />
-            </div>
+            <label className="block text-sm font-medium mb-2">Content *</label>
+            <EditorProvider
+              className="border rounded-md min-h-[400px] bg-white"
+              placeholder="Write your article content here... Use / for commands"
+              content={newsForm.content}
+              immediatelyRender={false}
+              onUpdate={({ editor }: { editor: Editor }) => {
+                const html = editor.getHTML()
+                setNewsForm({ ...newsForm, content: html })
+              }}
+            />
             <p className="text-xs text-gray-500 mt-1">
-              Supports Markdown formatting. Use ![alt text](image-url) to insert images.
+              Rich text editor with formatting options. Use the toolbar to format your content.
             </p>
           </div>
 
@@ -142,24 +153,37 @@ export function NewsTab({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Author</label>
-            <Input
-              placeholder="Author name (e.g., Ministry of Youth Affairs)"
-              value={newsForm.author}
-              onChange={(e) => setNewsForm({ ...newsForm, author: e.target.value })}
-            />
-          </div>
-
-          <div>
             <label className="block text-sm font-medium mb-2">Tags</label>
-            <Input
-              placeholder="Enter tags separated by commas (e.g., digital, education, youth)"
-              value={newsForm.tags.join(", ")}
-              onChange={(e) => setNewsForm({ ...newsForm, tags: e.target.value.split(",").map(tag => tag.trim()).filter(tag => tag) })}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Separate multiple tags with commas
-            </p>
+            <div className="space-y-2">
+              {/* Display existing tags as chips */}
+              {newsForm.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {newsForm.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-sm px-3 py-1">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                        aria-label={`Remove ${tag} tag`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {/* Tag input */}
+              <Input
+                placeholder="Type a tag and press Enter"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleAddTag}
+              />
+              <p className="text-xs text-gray-500">
+                Press Enter to add a tag
+              </p>
+            </div>
           </div>
 
           <div>

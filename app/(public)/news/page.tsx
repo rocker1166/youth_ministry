@@ -233,14 +233,17 @@ export default function NewsPage() {
 
             {/* Recent News Sidebar - Next 3 Most Recent */}
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-foreground mb-6">Recent Updates</h3>
+              <h3 className="text-lg font-bold text-foreground mb-4">Recent Updates</h3>
               {recentNews.map((article) => (
                 <Link key={article.id} href={`/news/${article.id}`}>
-                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                    <CardContent className="pt-6">
-                      <p className="text-xs font-semibold text-primary mb-2">{article.category}</p>
-                      <h4 className="font-semibold text-foreground mb-2 line-clamp-2">{article.title}</h4>
-                      <p className="text-xs text-muted-foreground">{formatDate(article.published_at)}</p>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
+                    <CardContent className="p-4">
+                      <Badge variant="outline" className="mb-2 text-xs">{article.category}</Badge>
+                      <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-snug">{article.title}</h4>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar size={12} />
+                        {formatDate(article.published_at)}
+                      </p>
                     </CardContent>
                   </Card>
                 </Link>
@@ -249,21 +252,21 @@ export default function NewsPage() {
           </div>
 
           {/* All News - Sorted by Creation Date (Most Recent First) */}
-          <div className="mt-16">
-            <h2 className="text-3xl font-bold text-foreground mb-8">All News</h2>
+          <div className="mt-12">
+            <h2 className="text-3xl font-bold text-foreground mb-6">All News</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {allNews.map((article) => (
                 <Link key={article.id} href={`/news/${article.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full cursor-pointer">
-                    <div className="h-40 bg-muted overflow-hidden">
+                  <Card className="overflow-hidden hover:shadow-lg transition-all flex flex-col h-full cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
+                    <div className="h-48 bg-muted overflow-hidden">
                       <img
                         src={article.featured_image || "/placeholder.svg"}
                         alt={article.title}
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-2">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between mb-3">
                         <Badge variant="secondary" className="text-xs capitalize">
                           {article.category}
                         </Badge>
@@ -272,17 +275,17 @@ export default function NewsPage() {
                           {formatDate(article.published_at)}
                         </span>
                       </div>
-                      <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+                      <CardTitle className="text-lg line-clamp-2 leading-snug">{article.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col">
-                      <p className="text-sm text-foreground/70 mb-4 line-clamp-2 flex-1">{article.excerpt}</p>
+                    <CardContent className="flex-1 flex flex-col pt-0">
+                      <p className="text-sm text-foreground/70 mb-4 line-clamp-3 flex-1 leading-relaxed">{article.excerpt}</p>
                       {article.author && (
                         <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1">
                           <User size={12} />
                           {article.author}
                         </p>
                       )}
-                      <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90 w-fit">
+                      <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90 w-fit p-0 h-auto">
                         Read More <ArrowRight size={16} />
                       </Button>
                     </CardContent>

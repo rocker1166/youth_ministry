@@ -90,7 +90,6 @@ export default function AdminDashboard() {
     excerpt: "",
     category: "",
     featured_image: "",
-    author: "",
     tags: [] as string[],
   })
 
@@ -387,7 +386,6 @@ export default function AdminDashboard() {
           excerpt: "",
           category: "",
           featured_image: "",
-          author: "",
           tags: [],
         })
         fetchNews()

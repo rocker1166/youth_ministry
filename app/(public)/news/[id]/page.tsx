@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, ArrowLeft, Clock, Tag, Share2 } from "lucide-react"
+import { Calendar, User, ArrowLeft, Clock, Tag, Share2, Copy, Check } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
@@ -355,20 +355,35 @@ export default function NewsDetailPage() {
   const params = useParams()
   const [newsData, setNewsData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    // Simulate API call - replace with actual API call later
     const fetchNews = async () => {
       setLoading(true)
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
       
-      const id = params.id as string
-      const data = dummyNewsData[id]
-      
-      if (data) {
-        setNewsData(data)
+      try {
+        const id = params.id as string
+        const response = await fetch(`/api/news/${id}`)
+        
+        if (response.ok) {
+          const data = await response.json()
+          setNewsData(data)
+        } else {
+          // Fallback to dummy data if API fails
+          const data = dummyNewsData[id]
+          if (data) {
+            setNewsData(data)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching news:', error)
+        // Fallback to dummy data on error
+        const data = dummyNewsData[params.id as string]
+        if (data) {
+          setNewsData(data)
+        }
       }
+      
       setLoading(false)
     }
 
@@ -416,6 +431,34 @@ export default function NewsDetailPage() {
     })
   }
 
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const shareText = newsData ? `Check out this article: ${newsData.title}` : ''
+
+  const handleWhatsAppShare = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`
+    window.open(whatsappUrl, '_blank')
+  }
+
+  const handleTwitterShare = () => {
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`
+    window.open(twitterUrl, '_blank')
+  }
+
+  const handleFacebookShare = () => {
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+    window.open(facebookUrl, '_blank')
+  }
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
   return (
     <main className="min-h-screen">
       {/* Breadcrumb & Back Button */}
@@ -442,22 +485,26 @@ export default function NewsDetailPage() {
                   <h1 className="text-4xl font-bold text-foreground mb-6">{newsData.title}</h1>
                   
                   <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <User size={16} />
-                      <span>{newsData.author}</span>
-                    </div>
+                    {newsData.author && (
+                      <div className="flex items-center gap-2">
+                        <User size={16} />
+                        <span>{newsData.author}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Calendar size={16} />
                       <span>{formatDate(newsData.published_at)}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} />
-                      <span>{newsData.reading_time}</span>
-                    </div>
+                    {newsData.reading_time && (
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} />
+                        <span>{newsData.reading_time}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Tags */}
-                  {newsData.tags && (
+                  {newsData.tags && Array.isArray(newsData.tags) && newsData.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-6">
                       {newsData.tags.map((tag: string) => (
                         <Badge key={tag} variant="outline" className="gap-1">
@@ -469,71 +516,121 @@ export default function NewsDetailPage() {
                   )}
                 </div>
 
-                {/* Article Content with Markdown */}
-                <div className="p-8">
-                  <div className="prose prose-lg max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                      components={{
-                        h1: ({ children }) => (
-                          <h1 className="text-3xl font-bold mt-8 mb-4 text-foreground">{children}</h1>
-                        ),
-                        h2: ({ children }) => (
-                          <h2 className="text-2xl font-bold mt-8 mb-4 text-foreground">{children}</h2>
-                        ),
-                        h3: ({ children }) => (
-                          <h3 className="text-xl font-semibold mt-6 mb-3 text-foreground">{children}</h3>
-                        ),
-                        p: ({ children }) => <p className="mb-4 text-foreground/80 leading-relaxed">{children}</p>,
-                        ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-2">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>,
-                        li: ({ children }) => <li className="text-foreground/80">{children}</li>,
-                        blockquote: ({ children }) => (
-                          <blockquote className="border-l-4 border-primary pl-4 italic my-6 text-foreground/70">
-                            {children}
-                          </blockquote>
-                        ),
-                        table: ({ children }) => (
-                          <div className="overflow-x-auto my-6">
-                            <table className="min-w-full divide-y divide-gray-200 border">{children}</table>
-                          </div>
-                        ),
-                        thead: ({ children }) => <thead className="bg-muted">{children}</thead>,
-                        tbody: ({ children }) => <tbody className="divide-y divide-gray-200">{children}</tbody>,
-                        th: ({ children }) => (
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{children}</th>
-                        ),
-                        td: ({ children }) => (
-                          <td className="px-4 py-3 text-sm text-foreground/80">{children}</td>
-                        ),
-                        img: ({ src, alt }) => (
-                          <img src={src} alt={alt} className="rounded-lg my-6 w-full shadow-md" />
-                        ),
-                        a: ({ href, children }) => (
-                          <a href={href} className="text-primary hover:underline font-medium">
-                            {children}
-                          </a>
-                        ),
-                        strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                        code: ({ children }) => (
-                          <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>
-                        ),
-                        hr: () => <hr className="my-8 border-t border-gray-200" />,
-                      }}
-                    >
-                      {newsData.content}
-                    </ReactMarkdown>
+                {/* Featured Image */}
+                {newsData.featured_image && (
+                  <div className="px-8 pb-8">
+                    <div className="relative w-full h-[400px] rounded-lg overflow-hidden shadow-md">
+                      <img
+                        src={newsData.featured_image}
+                        alt={newsData.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
+                )}
+
+                {/* Article Content with HTML rendering */}
+                <div className="p-8 pt-0">
+                  <div 
+                    className="prose prose-lg max-w-none
+                      [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-8 [&_h1]:mb-4
+                      [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4
+                      [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3
+                      [&_p]:mb-4 [&_p]:leading-relaxed
+                      [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul]:space-y-2
+                      [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol]:space-y-2
+                      [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-6
+                      [&_table]:min-w-full [&_table]:divide-y [&_table]:divide-gray-200 [&_table]:border [&_table]:my-6
+                      [&_thead]:bg-muted
+                      [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold
+                      [&_td]:px-4 [&_td]:py-3 [&_td]:text-sm
+                      [&_img]:rounded-lg [&_img]:my-6 [&_img]:w-full [&_img]:shadow-md
+                      [&_a]:text-primary [&_a]:hover:underline [&_a]:font-medium
+                      [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
+                      [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-6
+                    "
+                    dangerouslySetInnerHTML={{ __html: newsData.content }}
+                  />
                 </div>
 
                 {/* Share Section */}
                 <div className="p-8 pt-6 border-t">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">Share this article:</span>
-                    <Button variant="outline" className="gap-2">
-                      <Share2 size={16} />
-                      Share
+                  <h3 className="text-sm font-medium text-foreground mb-4">Share this article:</h3>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* WhatsApp Share */}
+                    <Button 
+                      variant="outline" 
+                      className="gap-2 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-colors"
+                      onClick={handleWhatsAppShare}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor"
+                        className="shrink-0"
+                      >
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                      </svg>
+                      WhatsApp
+                    </Button>
+
+                    {/* Twitter Share */}
+                    <Button 
+                      variant="outline" 
+                      className="gap-2 hover:bg-[#1DA1F2] hover:text-white hover:border-[#1DA1F2] transition-colors"
+                      onClick={handleTwitterShare}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor"
+                        className="shrink-0"
+                      >
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                      Twitter
+                    </Button>
+
+                    {/* Facebook Share */}
+                    <Button 
+                      variant="outline" 
+                      className="gap-2 hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] transition-colors"
+                      onClick={handleFacebookShare}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor"
+                        className="shrink-0"
+                      >
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                      Facebook
+                    </Button>
+
+                    {/* Copy Link */}
+                    <Button 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={handleCopyLink}
+                    >
+                      {copied ? (
+                        <>
+                          <Check size={16} className="text-green-600" />
+                          <span className="text-green-600">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={16} />
+                          Copy Link
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -543,18 +640,18 @@ export default function NewsDetailPage() {
             {/* Sidebar - Recent Updates */}
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
-                <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-foreground mb-4">
                   Recent Updates
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {recentUpdates.map((article) => (
                     <Link key={article.id} href={`/news/${article.id}`}>
-                      <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                        <CardContent className="pt-6">
+                      <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-transparent hover:border-l-primary">
+                        <CardContent className="p-4">
                           <Badge variant="outline" className="mb-2 text-xs">
                             {article.category}
                           </Badge>
-                          <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm">
+                          <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-snug">
                             {article.title}
                           </h4>
                           <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -568,7 +665,7 @@ export default function NewsDetailPage() {
                 </div>
                 
                 <Link href="/news">
-                  <Button variant="outline" className="w-full mt-6">
+                  <Button variant="outline" className="w-full mt-4">
                     View All News
                   </Button>
                 </Link>

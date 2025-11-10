@@ -49,8 +49,10 @@ export async function POST(request: Request) {
       content: body.content,
       excerpt: body.excerpt,
       category: body.category,
+      featured_image: body.featured_image || null,
+      tags: body.tags || [],
       status: body.status || "draft",
-      published_at: body.status === "published" ? new Date() : null,
+      published_at: body.status === "published" ? new Date().toISOString() : null,
     })
     .select()
 
