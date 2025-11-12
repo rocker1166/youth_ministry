@@ -73,21 +73,12 @@ export default function GalleryPreview() {
                   <p className="text-white font-semibold text-sm">{item.title}</p>
                 </div>
               </div>
-              <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                <ImageIcon className="w-4 h-4 text-primary" />
-              </div>
+             
             </div>
           ))}
         </div>
 
-        <div className="text-center">
-          <Link href="/gallery">
-            <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white group">
-              View Full Gallery
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-        </div>
+    
       </div>
     </section>
   )
