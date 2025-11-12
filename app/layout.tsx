@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Noto_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
+import { AccessibilityProvider } from "@/lib/accessibility-context"
 import "./globals.css"
 
 const notoSans = Noto_Sans({
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${notoSans.variable} font-sans antialiased`}>
-        {children}
-        <Toaster />
-        <Analytics />
+        <AccessibilityProvider>
+          {children}
+          <Toaster />
+          <Analytics />
+        </AccessibilityProvider>
       </body>
     </html>
   )

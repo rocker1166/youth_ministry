@@ -125,7 +125,7 @@ export function CTA() {
                   <div className="flex-1">
                     <p className="font-bold text-white text-sm mb-1.5 tracking-wide">EMAIL</p>
                     <p className="text-white/90 text-sm leading-relaxed break-all">
-                      info@iya.gov.in
+                      youthaffairs14@gmail.com
                       <br />
                       support@iya.gov.in
                     </p>

@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { Phone, Mail, MapPin, Twitter, Facebook, Linkedin, Instagram, ArrowRight, Youtube, ExternalLink, Github } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -124,9 +125,13 @@ export function Footer() {
           <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-linear-to-br from-primary to-primary-700 flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-xl">IYA</span>
-                </div>
+               <Image 
+               src = "/logo/home_logo.jpg"
+               alt = "IYA Logo"
+               width = {48}
+               height = {48}
+               className = "rounded-lg"
+                />
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-1">Institute of Youth Affairs</h3>
