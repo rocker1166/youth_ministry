@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Users, Target, Heart, Eye, Mail, Phone, Linkedin, Award, BookOpen, Globe } from "lucide-react"
 import Image from "next/image"
 
@@ -31,60 +32,39 @@ export default function AboutPage() {
     },
   ]
 
-  const teamMembers = [
+  // Governing Body Members
+  const governingBodyMembers = [
     {
-      id: 1,
-      name: "Dr. Rajesh Kumar",
-      position: "Director - Skill Development",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop",
-      bio: "Expert in youth skill development with 15+ years of experience in designing and implementing training programs.",
-      email: "rajesh.kumar@youthaffairs.gov.in",
-      phone: "+91 11 2345 6789",
+      name: "Shri Kajal Kumar Sur",
+      designation: "Vice-President",
     },
     {
-      id: 2,
-      name: "Ms. Priya Sharma",
-      position: "Head - Leadership Programs",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
-      bio: "Specializes in leadership training and has mentored over 10,000 young leaders across India.",
-      email: "priya.sharma@youthaffairs.gov.in",
-      phone: "+91 11 2345 6790",
+      name: "Smt. Mou Pramanik",
+      designation: "Treasurer",
     },
     {
-      id: 3,
-      name: "Mr. Amit Patel",
-      position: "Director - Entrepreneurship Cell",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop",
-      bio: "Former entrepreneur and startup mentor, helping young minds turn ideas into successful ventures.",
-      email: "amit.patel@youthaffairs.gov.in",
-      phone: "+91 11 2345 6791",
+      name: "Shri Soumen Konar",
+      designation: "Asst. General Secretary",
     },
     {
-      id: 4,
-      name: "Dr. Sunita Reddy",
-      position: "Head - Research & Development",
-      image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&h=400&fit=crop",
-      bio: "PhD in Youth Psychology, leading research initiatives to improve program effectiveness and impact.",
-      email: "sunita.reddy@youthaffairs.gov.in",
-      phone: "+91 11 2345 6792",
+      name: "Shri Alok Kumar Ghosh",
+      designation: "Member Executive",
     },
     {
-      id: 5,
-      name: "Mr. Vikram Singh",
-      position: "Director - State Coordination",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-      bio: "Manages partnerships with state governments and ensures seamless program implementation nationwide.",
-      email: "vikram.singh@youthaffairs.gov.in",
-      phone: "+91 11 2345 6793",
+      name: "Shri Anupam Chattopadhyay",
+      designation: "Member Executive",
     },
     {
-      id: 6,
-      name: "Ms. Kavita Desai",
-      position: "Head - Digital Initiatives",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop",
-      bio: "Leading digital transformation efforts and online learning platforms for youth across India.",
-      email: "kavita.desai@youthaffairs.gov.in",
-      phone: "+91 11 2345 6794",
+      name: "Ms Moumita Sen",
+      designation: "Member Executive",
+    },
+    {
+      name: "Shri Chandan Ghosh",
+      designation: "Member Executive",
+    },
+    {
+      name: "Shri Rajib De",
+      designation: "Member Executive",
     },
   ]
 
@@ -152,84 +132,87 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team Section - Compact */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
+        {/* Governing Body Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-foreground">Our Team</h2>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-foreground mb-3">Governing Body</h2>
+              <p className="text-muted-foreground">Leadership guiding our mission to empower youth</p>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6">
-              {/* General Secretary - Left Side */}
-              <div className="md:col-span-1">
-                <Card className="overflow-hidden border-2 border-primary/20 h-full">
-                  <div className="relative h-72 bg-gradient-to-br from-primary/10 to-primary/5">
-                    <Image
-                      src="/team/mohuya.jpg"
-                      alt="Mohuya Saha"
-                      fill
-                      className="object-cover object-[center_top]"
-                      style={{ objectPosition: 'center 0%' }}
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="text-center mb-3">
-                      <h3 className="text-lg font-bold text-foreground mb-1">Mohuya Saha</h3>
-                      <p className="text-sm text-primary font-semibold mb-2">General Secretary</p>
-                    </div>
-                    <p className="text-xs text-foreground/70 leading-relaxed mb-3">
-                      Leading the Institute with over 20 years of experience in youth development. 
-                      Instrumental in launching nationwide programs benefiting millions of young Indians.
+            {/* President & General Secretary - Top Row with Photos */}
+            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-10">
+              {/* President */}
+              <Card className="overflow-hidden border-2 border-primary/30 shadow-lg hover:shadow-xl transition-shadow">
+                <div className="relative h-72 bg-gradient-to-br from-primary/10 to-primary/5">
+                  <Image
+                    src="/team/Basab.jpg"
+                    alt="Professor (Dr.) Basab Chaudhuri"
+                    fill
+                    className="object-cover object-[center_20%]"
+                    style={{ objectPosition: 'center 20%' }}
+                  />
+                </div>
+                <CardContent className="p-5">
+                  <div className="text-center">
+                    <Badge className="mb-2 bg-primary text-white px-3 py-1 text-xs">President</Badge>
+                    <h3 className="text-lg font-bold text-foreground mb-2">
+                      Professor (Dr.) Basab Chaudhuri
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Leading the organization with distinguished academic excellence
                     </p>
-                    <div className="flex justify-center gap-3 text-xs">
-                      <a href="mailto:secretary@youthaffairs.gov.in" className="text-muted-foreground hover:text-primary">
-                        <Mail size={14} />
-                      </a>
-                      <a href="tel:+911123456789" className="text-muted-foreground hover:text-primary">
-                        <Phone size={14} />
-                      </a>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Team Members - Right Side */}
-              <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4">
-                {teamMembers.map((member) => (
-                  <div key={member.id} className="group relative overflow-hidden rounded-lg aspect-square cursor-pointer">
-                    {/* Image */}
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      className="object-cover object-top transition-transform duration-300 group-hover:scale-110"
-                    />
-                    
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                      <h3 className="text-white font-bold text-sm mb-1">{member.name}</h3>
-                      <p className="text-white/90 text-xs font-medium">{member.position}</p>
-                      <div className="flex gap-2 mt-2">
-                        <a 
-                          href={`mailto:${member.email}`} 
-                          className="text-white/80 hover:text-white transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Mail size={12} />
-                        </a>
-                        <a 
-                          href={`tel:${member.phone.replace(/\s/g, '')}`}
-                          className="text-white/80 hover:text-white transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Phone size={12} />
-                        </a>
+              {/* General Secretary */}
+              <Card className="overflow-hidden border-2 border-primary/30 shadow-lg hover:shadow-xl transition-shadow">
+                <div className="relative h-72 bg-gradient-to-br from-primary/10 to-primary/5">
+                  <Image
+                    src="/team/mohuya.jpg"
+                    alt="Smt. Mohuya Saha"
+                    fill
+                    className="object-cover object-[center_top]"
+                    style={{ objectPosition: 'center 0%' }}
+                  />
+                </div>
+                <CardContent className="p-5">
+                  <div className="text-center">
+                    <Badge className="mb-2 bg-primary text-white px-3 py-1 text-xs">General Secretary</Badge>
+                    <h3 className="text-lg font-bold text-foreground mb-2">Smt. Mohuya Saha</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Dedicated to youth development with extensive experience
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Executive Members - Full Width Below */}
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-primary/10 py-4">
+                <CardTitle className="text-xl text-center">Executive Members</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {governingBodyMembers.map((member, index) => (
+                    <div
+                      key={index}
+                      className="group relative p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 hover:border-primary transition-all bg-white dark:bg-slate-800 hover:shadow-lg"
+                    >
+                      <div className="flex flex-col items-center text-center">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base mb-2 group-hover:bg-primary group-hover:text-white transition-colors">
+                          {index + 1}
+                        </div>
+                        <h4 className="font-semibold text-foreground text-sm mb-1.5 leading-snug">{member.name}</h4>
+                        <p className="text-xs text-muted-foreground font-medium">{member.designation}</p>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>
