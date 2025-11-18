@@ -28,7 +28,7 @@ export function Navigation() {
     { label: t("programs"), href: "/programs" },
     { label: t("events"), href: "/events" },
     { label: t("news"), href: "/news" },
-    { label: t("resources"), href: "/resources" },
+    { label: t("archive"), href: "/archive" },
   ]
 
   return (

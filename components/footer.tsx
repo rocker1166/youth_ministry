@@ -27,10 +27,9 @@ const footerSections = [
     ],
   },
   {
-    title: "RESOURCES",
+    title: "ARCHIVE",
     links: [
-      { label: "Overview", href: "/resources" },
-      { label: "Documentation", href: "/resources/docs" },
+      { label: "Overview", href: "/archive" },
       { label: "Guidelines", href: "/guidelines" },
     ],
   },

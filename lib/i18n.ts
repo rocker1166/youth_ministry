@@ -20,6 +20,8 @@ export const i18n = {
       error: "Error",
       success: "Success",
       welcome: "Welcome",
+      resources: "Resources",
+      archive: "Archive",
       youth_affairs: "Institute of Youth Affairs",
     },
     hi: {
@@ -41,6 +43,8 @@ export const i18n = {
       error: "त्रुटि",
       success: "सफलता",
       welcome: "स्वागत है",
+      resources: "संसाधन",
+      archive: "संग्रह",
       youth_affairs: "युवा मामलों का संस्थान",
     },
   },

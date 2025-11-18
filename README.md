@@ -42,7 +42,7 @@ Files changed:
 - `app/programs/page.tsx` — Removed duplicate header/footer
 - `app/news/page.tsx` — Removed duplicate header/footer  
 - `app/contact/page.tsx` — Removed duplicate header/footer
-- `app/resources/page.tsx` — Removed duplicate header/footer
+- `app/archive/page.tsx` — Removed duplicate header/footer
 - `components/chatbot.tsx` — Connected to `/api/chat` API with real AI responses
 
 ## Prerequisites
