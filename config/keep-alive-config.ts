@@ -16,8 +16,8 @@ export const keepAliveConfig = {
 
   consoleLogOnError: true,
 
+  // Add URLs of other endpoints you want to keep alive (optional)
   otherEndpoints: [
-    'https://your-other-vercel-project-urls.vercel.app/api/keep-alive',
-    'https://your-other-supabase-app.com/api/keep-alive',
+    // 'https://your-other-vercel-project.vercel.app/api/keep-alive',
   ]
 }

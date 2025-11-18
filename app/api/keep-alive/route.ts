@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { supabase } from '@/lib/db'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 import { keepAliveConfig as config } from '@/config/keep-alive-config'
@@ -49,7 +49,7 @@ const fetchOtherEndpoints = async (): Promise<string[]> => {
 }
 
 export async function GET() {
-  const supabase = createClient()  // maybe switch to ClientSide Client
+  // Using singleton supabase client from lib/db.ts (service role key)
 
   let responseMessage: string = ''
   let successfulResponses: boolean = true
