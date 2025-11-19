@@ -226,4 +226,29 @@
   .animate-blink {
     animation: blink 1s step-end infinite;
   }
+
+  /* Content Protection - Disable text selection and copying */
+  .no-select,
+  body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Prevent image dragging */
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: auto;
+  }
+
+  /* Prevent image context menu */
+  img::selection {
+    background: transparent;
+  }
 }

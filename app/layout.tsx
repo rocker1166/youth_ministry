@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { AccessibilityProvider } from "@/lib/accessibility-context"
 import { ToastProvider } from "@/components/ToastProvider"
+import { ContentProtection } from "@/components/ContentProtection"
 import "./globals.css"
 
 const notoSans = Noto_Sans({
@@ -30,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${notoSans.variable} font-sans antialiased`}>
+        <ContentProtection />
         <ToastProvider>
           <AccessibilityProvider>
             {children}
