@@ -89,6 +89,7 @@ export interface CampData {
   }
   campExecutives: string[]
   brochureImages: string[]
+  brochurePDF: string
   missionVision: {
     history: string
     mission: string
@@ -363,8 +364,9 @@ export const CAMP_2025: CampData = {
     "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0001.jpg",
     "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0002.jpg",
     "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0003.jpg",
-    "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0004.jpg"
+    "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0004.jpg",
   ],
+  brochurePDF: "/Brochure, NIC, Institute of Youth Affairs.pdf",
   missionVision: {
     history: "Since 2014, the renowned social, voluntary and philanthropic society \"Institute of Youth Affairs\" was founded, it celebrates its journey with various annual commitments by yearly organized such National Integration Camp, National Seminars, National Science Awareness Campaign, and workshops to encourage the young minds in Science, to exchange mutually our cultural ties between students & youth of different corner of India, to make an eternal bond between students of all over India with the aim of implementing people-centered and community-oriented development programs with permanent impact on their life.",
     mission: "Our motto is to draw inspiration among students & youth from the vibrant colours of India's national flag saffron, white and green, and the blue chakra that reflects growth amid challenges. We generously organize this National Integration and Youth Leadership Camp since the organisation's inception and it has been 11 years of oath to convey a powerful message among the society by delivering our selfless care and service to bring the most remarkable change of this era.",

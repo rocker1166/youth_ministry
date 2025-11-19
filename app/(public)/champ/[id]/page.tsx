@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, Suspense } from "react"
+import { useParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -23,20 +23,33 @@ import {
   ChevronRight,
   X,
   Check,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react"
 import { CAMP_2025 } from "../data"
+import { useToast } from "@/components/ToastProvider"
+import { CampSkeleton } from "@/components/CampSkeleton"
 
-export default function CampDetailPage() {
+function CampDetailContent() {
   const params = useParams()
-  const router = useRouter()
   const campId = params.id as string
+  const { showToast } = useToast()
   
   const [activeTab, setActiveTab] = useState("overview")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  
+  // Expand/collapse states
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    mission: false,
+    objectives: false,
+    advisors: false,
+    executives: false,
+    eligibility: false
+  })
 
-  // For now, we only have one camp
   const camp = campId === CAMP_2025.id ? CAMP_2025 : null
 
   if (!camp) {
@@ -52,46 +65,45 @@ export default function CampDetailPage() {
     )
   }
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % camp.brochureImages.length)
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + camp.brochureImages.length) % camp.brochureImages.length)
-  }
+  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % camp.brochureImages.length)
+  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + camp.brochureImages.length) % camp.brochureImages.length)
 
   const handleShare = async () => {
     const url = window.location.href
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: camp.title,
-          text: camp.theme,
-          url: url,
-        })
+        await navigator.share({ title: camp.title, text: camp.theme, url })
+        showToast("Camp shared successfully!", "success")
       } catch (err) {
         console.log("Share cancelled")
       }
     } else {
       navigator.clipboard.writeText(url)
-      alert("Link copied to clipboard!")
+      showToast("Link copied to clipboard!", "success")
     }
   }
 
-  const handleDownloadCurrent = () => {
-    const link = document.createElement("a")
-    link.href = camp.brochureImages[currentImageIndex]
-    link.download = `NIC-2025-Brochure-Page-${currentImageIndex + 1}.jpg`
-    link.click()
+  const handleDownloadCurrent = async () => {
+    setIsDownloading(true)
+    showToast("Downloading brochure PDF...", "info", 2000)
+    
+    setTimeout(() => {
+      const link = document.createElement("a")
+      link.href = camp.brochurePDF
+      link.download = "NIC-2025-Brochure.pdf"
+      link.click()
+      setIsDownloading(false)
+      showToast("Brochure PDF downloaded successfully!", "success")
+    }, 500)
   }
 
-  const handleDownloadAll = () => {
-    camp.brochureImages.forEach((img, idx) => {
-      const link = document.createElement("a")
-      link.href = img
-      link.download = `NIC-2025-Brochure-Page-${idx + 1}.jpg`
-      setTimeout(() => link.click(), idx * 100)
-    })
+  const handleDownloadAll = async () => {
+    // Same as handleDownloadCurrent since we only have one PDF
+    handleDownloadCurrent()
   }
 
   const startDate = new Date(camp.startDate)
@@ -101,288 +113,260 @@ export default function CampDetailPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       {/* Lightbox */}
       {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-          onClick={() => setIsLightboxOpen(false)}
-        >
-          <button
-            onClick={() => setIsLightboxOpen(false)}
-            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white"
-          >
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-300" onClick={() => setIsLightboxOpen(false)}>
+          <button onClick={() => setIsLightboxOpen(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors">
             <X className="w-6 h-6" />
           </button>
           <div className="relative max-w-6xl w-full h-[90vh]">
-            <Image
-              src={camp.brochureImages[currentImageIndex]}
-              alt={`Brochure page ${currentImageIndex + 1}`}
-              fill
-              className="object-contain"
-            />
+            <Image src={camp.brochureImages[currentImageIndex]} alt={`Brochure page ${currentImageIndex + 1}`} fill className="object-contain" />
           </div>
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Back Button */}
-        <Link
-          href="/champ"
-          className="inline-flex items-center gap-2 text-primary hover:underline mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Camps
-        </Link>
-
-        {/* Brochure Gallery Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden mb-8">
-          <div className="p-6 border-b border-gray-200 dark:border-slate-700">
-            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-primary" />
-              Official Brochure
-            </h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between mb-4">
+          <Link href="/champ" className="inline-flex items-center gap-2 text-primary hover:underline text-sm transition-all hover:gap-3">
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Link>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleShare} 
+              className="p-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm hover:shadow-md text-sm"
+              title="Share camp"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={handleDownloadAll}
+              disabled={isDownloading}
+              className="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 text-sm flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              {isDownloading ? "Downloading..." : "Download PDF"}
+            </button>
           </div>
-          
-          <div className="p-6">
-            {/* Main Carousel */}
-            <div className="relative aspect-[16/10] bg-gray-100 dark:bg-slate-700 rounded-xl overflow-hidden mb-4">
-              <Image
-                src={camp.brochureImages[currentImageIndex]}
-                alt={`Brochure page ${currentImageIndex + 1}`}
-                fill
-                className="object-contain cursor-pointer"
-                onClick={() => setIsLightboxOpen(true)}
-              />
-              
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 rounded-full shadow-lg transition-all"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 rounded-full shadow-lg transition-all"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
+        </div>
 
-              {/* Click to expand hint */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
-                Click to view fullscreen
-              </div>
-            </div>
-
-            {/* Thumbnail Dots */}
-            <div className="flex justify-center gap-2 mb-6">
-              {camp.brochureImages.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentImageIndex(idx)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    idx === currentImageIndex
-                      ? "bg-primary w-8"
-                      : "bg-gray-300 dark:bg-slate-600 hover:bg-gray-400"
-                  }`}
+        {/* Main Content Grid with Glassmorphic Sidebar */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-6">
+          {/* Left: Sticky Brochure Carousel with Glassmorphism */}
+          <div className="lg:col-span-1">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-xl overflow-hidden sticky top-6 border border-white/20">
+              <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600">
+                <Image
+                  src={camp.brochureImages[currentImageIndex]}
+                  alt={`Brochure ${currentImageIndex + 1}`}
+                  fill
+                  className="object-contain cursor-pointer transition-transform hover:scale-105 duration-300"
+                  onClick={() => setIsLightboxOpen(true)}
                 />
-              ))}
+                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-lg hover:scale-110 transition-transform">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-lg hover:scale-110 transition-transform">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs">
+                  {currentImageIndex + 1} / {camp.brochureImages.length}
+                </div>
+              </div>
+              <div className="p-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md">
+                <div className="flex gap-1 justify-center mb-2">
+                  {camp.brochureImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`h-2 rounded-full transition-all ${idx === currentImageIndex ? "bg-primary w-6" : "bg-gray-300 dark:bg-slate-600 w-2 hover:bg-gray-400"}`}
+                    />
+                  ))}
+                </div>
+                <button 
+                  onClick={handleDownloadCurrent}
+                  disabled={isDownloading}
+                  className="w-full px-3 py-2 text-xs border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-white dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Download className="w-3 h-3" />
+                  {isDownloading ? "Downloading..." : "Download PDF Brochure"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Compact Info */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Title Card with Glassmorphism */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-xl p-5 border border-white/20">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-green-100 dark:from-orange-900/30 dark:to-green-900/30 px-2.5 py-1 rounded-full mb-2">
+                    <Sparkles className="w-3 h-3 text-orange-600 animate-pulse" />
+                    <span className="text-xs font-bold text-orange-700 dark:text-orange-300">{camp.edition}</span>
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-1">{camp.title}</h1>
+                  <p className="text-base text-primary font-semibold">{camp.theme}</p>
+                </div>
+              </div>
+              
+              {/* Key Stats - Compact Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700/50 dark:to-slate-600/50 rounded-lg backdrop-blur-sm">
+                  <Calendar className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Duration</p>
+                  <p className="font-bold text-sm text-foreground">Dec 24-31</p>
+                </div>
+                <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700/50 dark:to-slate-600/50 rounded-lg backdrop-blur-sm">
+                  <MapPin className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Location</p>
+                  <p className="font-bold text-sm text-foreground">Assam Univ</p>
+                </div>
+                <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700/50 dark:to-slate-600/50 rounded-lg backdrop-blur-sm">
+                  <Users className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Capacity</p>
+                  <p className="font-bold text-sm text-foreground">500+</p>
+                </div>
+                <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-slate-700/50 dark:to-slate-600/50 rounded-lg backdrop-blur-sm">
+                  <Award className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Fee</p>
+                  <p className="font-bold text-sm text-green-600">Free</p>
+                </div>
+              </div>
+
+              {/* Registration Alert - Compact */}
+              <div className="mt-4 bg-gradient-to-r from-primary/10 to-blue-500/10 border-l-4 border-primary rounded-lg p-3">
+                <div className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-gray-700 dark:text-gray-300">
+                    <p><strong>Reporting:</strong> {camp.reportingInfo.dates}, {camp.reportingInfo.time}</p>
+                    <p><strong>Inaugural:</strong> {new Date(camp.inauguralCeremony.date).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}, {camp.inauguralCeremony.time}</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleDownloadCurrent}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download Current Page
+            {/* Quick Actions */}
+            <div className="flex gap-2">
+              <button className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2 transform hover:scale-[1.02]">
+                <Award className="w-4 h-4" />
+                Register Now
               </button>
-              <button
-                onClick={handleDownloadAll}
-                className="flex items-center gap-2 px-4 py-2 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all"
-              >
-                <Download className="w-4 h-4" />
-                Download All (4 Pages)
-              </button>
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-2 px-4 py-2 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                Share Camp
+              <button onClick={() => setActiveTab("organizers")} className="px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all font-semibold flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                Contact
               </button>
             </div>
           </div>
         </div>
 
-        {/* Hero Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden mb-8">
-          <div className="relative h-48 bg-gradient-to-r from-orange-500 via-blue-500 to-green-500">
-            <div className="absolute inset-0 bg-black/40" />
-            <div className="relative h-full flex items-center justify-center text-center px-6">
-              <div>
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
-                  <Sparkles className="w-4 h-4 text-yellow-300" />
-                  <span className="text-white font-semibold text-sm">{camp.edition}</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                  {camp.title}
-                </h1>
-                <p className="text-xl text-white/90 font-semibold">
-                  {camp.theme}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-8">
-            {/* Organizer Badge */}
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Building2 className="w-5 h-5 text-primary" />
-              <span className="text-gray-600 dark:text-gray-400">Organized by</span>
-              <span className="font-bold text-foreground">{camp.organizer}</span>
-            </div>
-
-            {/* Key Details Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-xl text-center">
-                <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Duration</p>
-                <p className="font-bold text-foreground">
-                  {startDate.toLocaleDateString("en-IN", { month: "short", day: "numeric" })} - {endDate.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">8 Days</p>
-              </div>
-
-              <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-slate-600 rounded-xl text-center">
-                <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Location</p>
-                <p className="font-bold text-foreground">{camp.location.split(",")[0]}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {camp.location.split(",").slice(1).join(",")}
-                </p>
-              </div>
-
-              <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 rounded-xl text-center">
-                <Users className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Capacity</p>
-                <p className="font-bold text-foreground">{camp.capacity}+ Participants</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Expected</p>
-              </div>
-
-              <div className="p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-xl text-center">
-                <Award className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Registration</p>
-                <p className="font-bold text-green-600 dark:text-green-400">{camp.registrationFee}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Age {camp.eligibility.minAge}-{camp.eligibility.maxAge}
-                </p>
-              </div>
-            </div>
-
-            {/* Registration Info Alert */}
-            <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-l-4 border-primary rounded-lg p-4">
-              <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" />
-                Registration & Reporting Information
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400"><strong>Reporting Dates:</strong> {camp.reportingInfo.dates}</p>
-                  <p className="text-gray-600 dark:text-gray-400"><strong>Reporting Time:</strong> {camp.reportingInfo.time}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400"><strong>Inaugural Ceremony:</strong></p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {new Date(camp.inauguralCeremony.date).toLocaleDateString("en-IN", { 
-                      weekday: "long", 
-                      month: "long", 
-                      day: "numeric", 
-                      year: "numeric" 
-                    })} at {camp.inauguralCeremony.time}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs Navigation */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg mb-8 overflow-hidden">
-          <div className="flex overflow-x-auto border-b border-gray-200 dark:border-slate-700">
+        {/* Tabs with Glassmorphism */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl shadow-xl overflow-hidden border border-white/20">
+          {/* Tab Navigation */}
+          <div className="flex overflow-x-auto border-b border-gray-200/50 dark:border-slate-700/50 scrollbar-hide bg-white/50 dark:bg-slate-800/50 backdrop-blur-md">
             {[
               { id: "overview", label: "Overview", icon: Target },
-              { id: "schedule", label: "Daily Schedule", icon: Calendar },
-              { id: "training", label: "Training & Workshops", icon: GraduationCap },
-              { id: "organizers", label: "Organizers & Leadership", icon: Building2 },
+              { id: "schedule", label: "Schedule", icon: Calendar },
+              { id: "training", label: "Training", icon: GraduationCap },
+              { id: "organizers", label: "Contact", icon: Building2 },
             ].map((tab) => {
               const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-4 font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? "text-primary border-b-2 border-primary bg-primary/5"
-                      : "text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-gray-50 dark:hover:bg-slate-700"
+                      : "text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-gray-50/50 dark:hover:bg-slate-700/50"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4" />
                   {tab.label}
                 </button>
               )
             })}
           </div>
 
-          <div className="p-8">
-            {/* Overview Tab */}
+          {/* Tab Content */}
+          <div className="p-5 max-h-[600px] overflow-y-auto">
+            {/* Overview */}
             {activeTab === "overview" && (
-              <div className="space-y-8">
-                {/* Mission & Vision */}
+              <div className="space-y-5">
+                {/* Mission & Vision - FULL TEXT with Expand */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Target className="w-6 h-6 text-primary" />
+                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-primary" />
                     Mission & Vision
                   </h3>
-                  <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                    <p className="leading-relaxed">{camp.missionVision.history}</p>
-                    <p className="leading-relaxed">{camp.missionVision.mission}</p>
-                    <p className="leading-relaxed">{camp.missionVision.approach}</p>
+                  <div className={`text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-2 ${!expandedSections.mission ? 'line-clamp-4' : ''}`}>
+                    <p>{camp.missionVision.history}</p>
+                    <p>{camp.missionVision.mission}</p>
+                    <p>{camp.missionVision.approach}</p>
                   </div>
+                  <button
+                    onClick={() => toggleSection('mission')}
+                    className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    {expandedSections.mission ? (
+                      <><ChevronUp className="w-3 h-3" /> Show Less</>
+                    ) : (
+                      <><ChevronDown className="w-3 h-3" /> Read More</>
+                    )}
+                  </button>
                 </div>
 
-                {/* Objectives */}
+                {/* Objectives - ALL 15 with Expand */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Aims & Objectives
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {camp.objectives.map((objective, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{objective}</p>
+                  <h3 className="text-lg font-bold text-foreground mb-3">All {camp.objectives.length} Objectives</h3>
+                  <div className={`grid md:grid-cols-2 gap-2 ${!expandedSections.objectives ? 'max-h-64 overflow-hidden' : ''}`}>
+                    {camp.objectives.map((obj, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-gray-700 dark:text-gray-300 p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                        <Check className="w-3 h-3 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span>{obj}</span>
                       </div>
                     ))}
                   </div>
+                  {!expandedSections.objectives && (
+                    <button
+                      onClick={() => toggleSection('objectives')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1 transition-colors"
+                    >
+                      <ChevronDown className="w-3 h-3" /> Show All {camp.objectives.length} Objectives
+                    </button>
+                  )}
+                  {expandedSections.objectives && (
+                    <button
+                      onClick={() => toggleSection('objectives')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1 transition-colors"
+                    >
+                      <ChevronUp className="w-3 h-3" /> Show Less
+                    </button>
+                  )}
                 </div>
 
-                {/* Eligibility */}
+                {/* Eligibility - FULL TEXT with Expand */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Eligibility Criteria
-                  </h3>
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-xl p-6">
-                    <div className="flex items-start gap-4">
-                      <Users className="w-8 h-8 text-primary flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-foreground mb-2">Eligibility Criteria</h3>
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-lg p-3">
+                    <div className="flex items-start gap-3">
+                      <Users className="w-6 h-6 text-primary flex-shrink-0" />
                       <div>
-                        <p className="font-semibold text-foreground mb-2">
+                        <p className="font-semibold text-sm text-foreground mb-1">
                           Age Group: {camp.eligibility.minAge}-{camp.eligibility.maxAge} years
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
+                        <p className={`text-xs text-gray-700 dark:text-gray-300 ${!expandedSections.eligibility ? 'line-clamp-2' : ''}`}>
                           {camp.eligibility.description}
                         </p>
+                        <button
+                          onClick={() => toggleSection('eligibility')}
+                          className="mt-1 text-xs text-primary hover:underline flex items-center gap-1"
+                        >
+                          {expandedSections.eligibility ? (
+                            <><ChevronUp className="w-3 h-3" /> Show Less</>
+                          ) : (
+                            <><ChevronDown className="w-3 h-3" /> Read More</>
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -390,29 +374,22 @@ export default function CampDetailPage() {
 
                 {/* Achievements */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Past Achievements
-                  </h3>
-                  <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-xl p-6">
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  <h3 className="text-lg font-bold text-foreground mb-2">Past Achievements</h3>
+                  <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-lg p-3">
+                    <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
                       {camp.missionVision.achievements}
                     </p>
                   </div>
                 </div>
 
-                {/* VVIP Guests */}
+                {/* VVIPs - All 5 */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Distinguished Guests
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h3 className="text-lg font-bold text-foreground mb-2">Distinguished Guests ({camp.vvipGuests.length})</h3>
+                  <div className="grid md:grid-cols-2 gap-2">
                     {camp.vvipGuests.map((guest, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-lg"
-                      >
-                        <Award className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-tight">{guest}</p>
+                      <div key={idx} className="flex items-start gap-2 p-2 bg-gradient-to-r from-primary/10 to-blue-500/10 rounded">
+                        <Award className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-gray-700 dark:text-gray-300">{guest}</p>
                       </div>
                     ))}
                   </div>
@@ -420,88 +397,40 @@ export default function CampDetailPage() {
               </div>
             )}
 
-            {/* Daily Schedule Tab */}
+            {/* Schedule - Compact */}
             {activeTab === "schedule" && (
-              <div className="space-y-8">
+              <div className="space-y-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Daily Training Schedule
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    {camp.trainingPeriod.startDate} to {camp.trainingPeriod.endDate} | {camp.trainingPeriod.timing}
-                  </p>
-                  <div className="space-y-3">
-                    {camp.dailySchedule.map((schedule, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg"
-                      >
-                        <div className="flex-shrink-0 w-32">
-                          <p className="font-semibold text-primary">{schedule.time}</p>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-gray-700 dark:text-gray-300">{schedule.activity}</p>
-                        </div>
+                  <h3 className="text-lg font-bold text-foreground mb-3">Daily Routine</h3>
+                  <div className="space-y-2">
+                    {camp.dailySchedule.map((s, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-slate-700/50 rounded text-xs">
+                        <span className="font-semibold text-primary w-24 flex-shrink-0">{s.time}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{s.activity}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Events by Date */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Seminars, Workshops & Cultural Programmes
-                  </h3>
-                  <div className="space-y-6">
+                  <h3 className="text-lg font-bold text-foreground mb-3">Events by Date (27 Total)</h3>
+                  <div className="space-y-3">
                     {Object.entries(camp.eventsByDate).map(([date, events]) => (
-                      <div key={date} className="border-l-4 border-primary pl-6 py-4">
-                        <h4 className="text-xl font-bold text-foreground mb-4">
-                          {new Date(date).toLocaleDateString("en-IN", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                      <div key={date} className="border-l-2 border-primary pl-3">
+                        <h4 className="font-bold text-sm text-foreground mb-2">
+                          {new Date(date).toLocaleDateString("en-IN", { month: "short", day: "numeric" })} ({events.length} events)
                         </h4>
-                        <div className="space-y-3">
+                        <div className="space-y-1.5">
                           {events.map((event, idx) => (
-                            <div
-                              key={idx}
-                              className={`flex items-start gap-3 p-4 rounded-lg ${
-                                event.type === "ceremony"
-                                  ? "bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20"
-                                  : event.type === "seminar"
-                                  ? "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20"
-                                  : event.type === "workshop"
-                                  ? "bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20"
-                                  : "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20"
-                              }`}
-                            >
-                              <div className="flex-shrink-0">
-                                <span
-                                  className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${
-                                    event.type === "ceremony"
-                                      ? "bg-orange-500 text-white"
-                                      : event.type === "seminar"
-                                      ? "bg-blue-500 text-white"
-                                      : event.type === "workshop"
-                                      ? "bg-purple-500 text-white"
-                                      : "bg-green-500 text-white"
-                                  }`}
-                                >
-                                  {event.type}
-                                </span>
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {event.title}
-                                </p>
-                                {event.time && (
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                    {event.time}
-                                  </p>
-                                )}
-                              </div>
+                            <div key={idx} className="flex items-start gap-2 text-xs">
+                              <span className={`px-1.5 py-0.5 rounded text-white font-semibold uppercase ${
+                                event.type === "ceremony" ? "bg-orange-500" :
+                                event.type === "seminar" ? "bg-blue-500" :
+                                event.type === "workshop" ? "bg-purple-500" : "bg-green-500"
+                              }`}>
+                                {event.type.slice(0, 3)}
+                              </span>
+                              <span className="text-gray-700 dark:text-gray-300">{event.title}</span>
                             </div>
                           ))}
                         </div>
@@ -512,38 +441,28 @@ export default function CampDetailPage() {
               </div>
             )}
 
-            {/* Training & Workshops Tab */}
+            {/* Training - Compact Grid */}
             {activeTab === "training" && (
-              <div className="space-y-8">
+              <div className="space-y-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Training Subjects
-                  </h3>
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  <h3 className="text-lg font-bold text-foreground mb-3">Training Subjects (All {camp.trainingSubjects.length})</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {camp.trainingSubjects.map((subject) => (
-                      <div
-                        key={subject}
-                        className="flex items-center gap-3 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <GraduationCap className="w-6 h-6 text-primary flex-shrink-0" />
-                        <p className="font-semibold text-gray-900 dark:text-white">{subject}</p>
+                      <div key={subject} className="flex items-center gap-2 p-2 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded text-xs">
+                        <GraduationCap className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="font-semibold text-gray-900 dark:text-white">{subject}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Expert Faculties & Resource Persons
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h3 className="text-lg font-bold text-foreground mb-3">Expert Faculties (All {camp.faculties.length})</h3>
+                  <div className="grid md:grid-cols-2 gap-2">
                     {camp.faculties.map((faculty, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg"
-                      >
-                        <BookOpen className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{faculty}</p>
+                      <div key={idx} className="flex items-start gap-2 p-2 bg-gray-50 dark:bg-slate-700/50 rounded text-xs">
+                        <BookOpen className="w-3 h-3 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700 dark:text-gray-300">{faculty}</span>
                       </div>
                     ))}
                   </div>
@@ -551,22 +470,36 @@ export default function CampDetailPage() {
               </div>
             )}
 
-            {/* Organizers & Leadership Tab */}
+            {/* Organizers - FULL INFORMATION */}
             {activeTab === "organizers" && (
-              <div className="space-y-8">
-                {/* Cooperating Bodies */}
+              <div className="space-y-4">
+                {/* Contact First */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-lg p-4">
+                  <h3 className="text-lg font-bold text-foreground mb-3">{camp.organizerDetails.name}</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-gray-700 dark:text-gray-300">{camp.organizerDetails.address}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-primary flex-shrink-0" />
+                      <p className="text-gray-700 dark:text-gray-300">{camp.organizerDetails.phone} | {camp.organizerDetails.mobile}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-primary flex-shrink-0" />
+                      <a href={`mailto:${camp.organizerDetails.email}`} className="text-primary hover:underline">{camp.organizerDetails.email}</a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Partners */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    In Cooperation With
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h3 className="text-lg font-bold text-foreground mb-2">In Cooperation With ({camp.cooperatingBodies.length})</h3>
+                  <div className="grid md:grid-cols-2 gap-2">
                     {camp.cooperatingBodies.map((body, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-3 p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-lg"
-                      >
-                        <Building2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{body}</p>
+                      <div key={idx} className="flex items-start gap-2 text-xs p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                        <Building2 className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700 dark:text-gray-300">{body}</span>
                       </div>
                     ))}
                   </div>
@@ -574,204 +507,155 @@ export default function CampDetailPage() {
 
                 {/* Chief Advisor */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Chief Advisor
-                  </h3>
-                  <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-xl p-6">
-                    <p className="font-bold text-xl text-foreground">{camp.chiefAdvisor.name}</p>
-                    <p className="text-gray-600 dark:text-gray-400">{camp.chiefAdvisor.title}</p>
+                  <h3 className="text-lg font-bold text-foreground mb-2">Chief Advisor</h3>
+                  <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-lg p-3">
+                    <p className="font-bold text-base text-foreground">{camp.chiefAdvisor.name}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">{camp.chiefAdvisor.title}</p>
                   </div>
                 </div>
 
-                {/* Advisors */}
+                {/* ALL 12 Advisors with Expand */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Advisors
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <h3 className="text-lg font-bold text-foreground mb-2">All {camp.advisors.length} Advisors</h3>
+                  <div className={`grid md:grid-cols-2 gap-2 ${!expandedSections.advisors ? 'max-h-48 overflow-hidden' : ''}`}>
                     {camp.advisors.map((advisor, idx) => (
-                      <div key={idx} className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+                      <div key={idx} className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded text-xs">
                         <p className="font-semibold text-gray-900 dark:text-white">{advisor.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{advisor.title}</p>
+                        <p className="text-gray-600 dark:text-gray-400">{advisor.title}</p>
                       </div>
                     ))}
                   </div>
+                  {!expandedSections.advisors && (
+                    <button
+                      onClick={() => toggleSection('advisors')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1"
+                    >
+                      <ChevronDown className="w-3 h-3" /> Show All {camp.advisors.length} Advisors
+                    </button>
+                  )}
+                  {expandedSections.advisors && (
+                    <button
+                      onClick={() => toggleSection('advisors')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1"
+                    >
+                      <ChevronUp className="w-3 h-3" /> Show Less
+                    </button>
+                  )}
                 </div>
 
                 {/* Leadership */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Leadership
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">President (Camp)</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.president.name}</p>
-                      </div>
-                      <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">President (Organization)</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.organizationPresident.name}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{camp.leadership.organizationPresident.title}</p>
-                      </div>
-                      <div className="p-5 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Vice President</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.vicePresident.name}</p>
-                      </div>
-                      <div className="p-5 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">General Secretary</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.generalSecretary.name}</p>
-                      </div>
-                      <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Treasurer</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.treasurer.name}</p>
-                      </div>
-                      <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 rounded-xl">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Additional General Secretary</p>
-                        <p className="font-bold text-lg text-foreground">{camp.leadership.additionalGeneralSecretary.name}</p>
-                      </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">Leadership</h3>
+                  <div className="grid md:grid-cols-2 gap-2 text-xs">
+                    <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">President (Camp)</p>
+                      <p className="font-bold text-foreground">{camp.leadership.president.name}</p>
                     </div>
-
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Secretary (Culture)</p>
-                        <p className="font-semibold text-foreground">{camp.leadership.secretaries.culture.name}</p>
-                      </div>
-                      <div className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Secretary (Training)</p>
-                        <p className="font-semibold text-foreground">{camp.leadership.secretaries.training.name}</p>
-                      </div>
-                      <div className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Secretary (Science)</p>
-                        <p className="font-semibold text-foreground">{camp.leadership.secretaries.science.name}</p>
-                      </div>
+                    <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">President (Org)</p>
+                      <p className="font-bold text-foreground">{camp.leadership.organizationPresident.name}</p>
+                      <p className="text-gray-500 text-xs">{camp.leadership.organizationPresident.title}</p>
+                    </div>
+                    <div className="p-2 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">Vice President</p>
+                      <p className="font-bold text-foreground">{camp.leadership.vicePresident.name}</p>
+                    </div>
+                    <div className="p-2 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">General Secretary</p>
+                      <p className="font-bold text-foreground">{camp.leadership.generalSecretary.name}</p>
+                    </div>
+                    <div className="p-2 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">Treasurer</p>
+                      <p className="font-bold text-foreground">{camp.leadership.treasurer.name}</p>
+                    </div>
+                    <div className="p-2 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">Additional GS</p>
+                      <p className="font-bold text-foreground">{camp.leadership.additionalGeneralSecretary.name}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-2 mt-2 text-xs">
+                    <div className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                      <p className="text-gray-600 dark:text-gray-400">Secretary (Culture)</p>
+                      <p className="font-semibold text-foreground">{camp.leadership.secretaries.culture.name}</p>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                      <p className="text-gray-600 dark:text-gray-400">Secretary (Training)</p>
+                      <p className="font-semibold text-foreground">{camp.leadership.secretaries.training.name}</p>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                      <p className="text-gray-600 dark:text-gray-400">Secretary (Science)</p>
+                      <p className="font-semibold text-foreground">{camp.leadership.secretaries.science.name}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Coordinators */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Coordinators
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-lg">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Main Coordinator</p>
+                  <h3 className="text-lg font-bold text-foreground mb-2">Coordinators</h3>
+                  <div className="space-y-2 text-xs">
+                    <div className="p-2 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400">Main Coordinator</p>
                       <p className="font-bold text-foreground">{camp.coordinators.main.name}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{camp.coordinators.main.title}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{camp.coordinators.main.title}</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded-lg">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Joint Coordinator</p>
+                    <div className="p-2 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-700 dark:to-slate-600 rounded">
+                      <p className="text-gray-600 dark:text-gray-400">Joint Coordinator</p>
                       <p className="font-bold text-foreground">{camp.coordinators.joint.name}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{camp.coordinators.joint.title}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{camp.coordinators.joint.title}</p>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-2">
                       {camp.coordinators.deputy.map((deputy, idx) => (
-                        <div key={idx} className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Deputy Coordinator</p>
+                        <div key={idx} className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded">
+                          <p className="text-gray-600 dark:text-gray-400">Deputy Coordinator</p>
                           <p className="font-semibold text-foreground">{deputy.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{deputy.title}</p>
+                          <p className="text-gray-500">{deputy.title}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Camp Executives */}
+                {/* ALL 13 Camp Executives with Expand */}
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Camp Executives
-                  </h3>
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <h3 className="text-lg font-bold text-foreground mb-2">All {camp.campExecutives.length} Camp Executives</h3>
+                  <div className={`grid sm:grid-cols-2 md:grid-cols-3 gap-2 ${!expandedSections.executives ? 'max-h-32 overflow-hidden' : ''}`}>
                     {camp.campExecutives.map((executive, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg text-center"
-                      >
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{executive}</p>
+                      <div key={idx} className="p-2 bg-gray-50 dark:bg-slate-700/50 rounded text-center text-xs">
+                        <p className="font-medium text-gray-900 dark:text-white">{executive}</p>
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Contact Information */}
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-6">
-                    Contact Information
-                  </h3>
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-600 rounded-xl p-6">
-                    <p className="font-bold text-lg text-foreground mb-4">
-                      {camp.organizerDetails.name}
-                    </p>
-                    <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                      {camp.organizerDetails.registrations.map((reg, idx) => (
-                        <p key={idx} className="text-xs">{reg}</p>
-                      ))}
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-primary" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{camp.organizerDetails.address}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-primary" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                          {camp.organizerDetails.phone} | {camp.organizerDetails.mobile}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-primary" />
-                        <a
-                          href={`mailto:${camp.organizerDetails.email}`}
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {camp.organizerDetails.email}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  {!expandedSections.executives && (
+                    <button
+                      onClick={() => toggleSection('executives')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1"
+                    >
+                      <ChevronDown className="w-3 h-3" /> Show All {camp.campExecutives.length} Executives
+                    </button>
+                  )}
+                  {expandedSections.executives && (
+                    <button
+                      onClick={() => toggleSection('executives')}
+                      className="mt-2 w-full py-2 text-xs text-primary hover:bg-primary/5 rounded flex items-center justify-center gap-1"
+                    >
+                      <ChevronUp className="w-3 h-3" /> Show Less
+                    </button>
+                  )}
                 </div>
               </div>
             )}
           </div>
         </div>
-
-        {/* Sticky CTA Section (at bottom when scrolling) */}
-        <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t-2 border-primary rounded-t-2xl shadow-2xl p-6">
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-xl font-bold text-foreground">
-                Ready to Join the Camp?
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Registration opens soon. Don't miss this opportunity!
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2 animate-pulse">
-                <Award className="w-5 h-5" />
-                Register for Camp
-              </button>
-              <button
-                onClick={handleDownloadAll}
-                className="px-6 py-3 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-              >
-                <Download className="w-5 h-5 inline mr-2" />
-                Download Brochure
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Share Button */}
-        <button
-          onClick={handleShare}
-          className="fixed right-6 bottom-24 p-4 bg-primary text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-40"
-          aria-label="Share this camp"
-        >
-          <Share2 className="w-6 h-6" />
-        </button>
       </div>
     </div>
+  )
+}
+
+export default function CampDetailPage() {
+  return (
+    <Suspense fallback={<CampSkeleton />}>
+      <CampDetailContent />
+    </Suspense>
   )
 }
