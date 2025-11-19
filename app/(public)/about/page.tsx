@@ -9,26 +9,26 @@ export default function AboutPage() {
   const values = [
     {
       icon: Target,
-      title: "Mission",
+      title: "National Integration",
       description:
-        "To develop the personality of Indian youth through holistic programs combining education, skill development, and character building.",
+        "To promote national integration, unity, and peace through youth exchange and collaborative activities. Drawing inspiration from India's tricolor, we unite youth from diverse cultures, languages, and regions.",
     },
     {
       icon: Eye,
-      title: "Vision",
+      title: "Youth Empowerment",
       description:
-        "A prosperous India with empowered, skilled, and socially conscious youth leading development across all sectors.",
+        "To empower youth in different subjects for making worthy human beings and develop leadership and responsibility. We provide training and skill development to enhance employability and entrepreneurship for Golden India.",
     },
     {
       icon: Heart,
-      title: "Values",
-      description: "Integrity, inclusivity, excellence, and commitment to youth empowerment and national development.",
+      title: "Cultural Heritage",
+      description: "To arouse consciousness about the Cultural Heritage of our Country and promote youth affairs related Scientific and Cultural projects. Celebrating India's diversity and sustainability through multi-cultural programs.",
     },
     {
       icon: Users,
-      title: "Commitment",
+      title: "Scientific Education",
       description:
-        "Equal opportunities for all youth irrespective of background, ensuring accessibility across urban and rural areas.",
+        "To foster the spirit of Literacy, Scientific and Technical Education. Supporting Science research and innovation in youth-related issues through national seminars, training programs, and expert guidance.",
     },
   ]
 
@@ -112,21 +112,15 @@ export default function AboutPage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-4xl font-bold text-center text-foreground">Our Journey</h2>
-            <div className="space-y-4 text-foreground/80">
+          <div className="space-y-4 text-foreground/80">
               <p>
-                The Institute of Youth Affairs has been instrumental in shaping the careers and personalities of
-                millions of young Indians. Founded with a vision to empower youth, it has grown into a national
-                institution with presence across all states.
+                Since 2014, the Institute of Youth Affairs has celebrated its journey by organizing the National Integration Camp, National Seminars, National Science Awareness Campaign, and workshops to encourage young minds in Science. We exchange mutually our cultural ties between students & youth from different corners of India, creating an eternal bond with the aim of implementing people-centered and community-oriented development programs with permanent impact on their lives.
               </p>
               <p>
-                Through various programs spanning skill development, leadership training, entrepreneurship support, and
-                social responsibility, the Institute has created pathways for youth to realize their potential and
-                contribute meaningfully to national development.
+                Drawing inspiration from the vibrant colours of India's national flag — saffron, white and green, and the blue chakra that reflects growth amid challenges — we have successfully organized 11 National Integration Camps across states including Karnataka, Rajasthan, Goa, Meghalaya, Gujarat, Assam, Tamil Nadu, Tripura, Andaman & Nicobar Island, Arunachal Pradesh, and Sikkim.
               </p>
               <p>
-                Today, as India marches towards becoming a developed nation, the Institute remains committed to ensuring
-                that every young person, regardless of their background, has access to quality education and skill
-                development opportunities.
+                Throughout each camp, we offer efficient training on subjects like Yoga, Aerobics, Drill, Self-Defence, Career Guidance, Technical Education, Music & Dance by experts, high dignitaries, vice-chancellors, and professors. Participants, aged 14 to 22, stay together for 8 days, developing discipline, understanding the value of time, mutual cooperation, and friendliness. They discover multi-cultural, multi-lingual, multi-racial unity that helps them develop a sense of integrity and national integration.
               </p>
             </div>
           </div>

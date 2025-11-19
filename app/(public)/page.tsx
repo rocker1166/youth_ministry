@@ -9,12 +9,20 @@ import UpcomingEvents from "@/components/upcoming-events"
 import MinistryGrid from "@/components/ministry-grid"
 import GalleryPreview from "@/components/gallery-preview"
 import { PartnerMinistriesTicker } from "@/components/partner-ministries-ticker"
+import { CampBanner } from "@/components/CampBanner"
+import { CampPromoModal } from "@/components/CampPromoModal"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <CampPromoModal />
+      
+      <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <Hero />
+
+      {/* Camp Banner */}
+      <CampBanner />
 
       {/* About Snippet Section */}
       <section className="py-16 bg-white border-b border-gray-200">
@@ -69,5 +77,6 @@ export default function Home() {
       {/* CTA Section */}
       <CTA />
     </div>
+    </>
   )
 }
