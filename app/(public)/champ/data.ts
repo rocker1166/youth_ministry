@@ -90,6 +90,26 @@ export interface CampData {
   campExecutives: string[]
   brochureImages: string[]
   brochurePDF: string
+  scienceExhibition?: {
+    title: string
+    theme: string
+    dates: {
+      start: string
+      end: string
+    }
+    timing: string
+    venue: string
+    brochureImages: string[]
+    brochurePDF: string
+    description: string
+    benefits: string[]
+    specialSessions: string[]
+    seminars: {
+      date: string
+      events: string[]
+    }[]
+    expectedDepartments: string[]
+  }
   missionVision: {
     history: string
     mission: string
@@ -367,6 +387,83 @@ export const CAMP_2025: CampData = {
     "/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0004.jpg",
   ],
   brochurePDF: "/Brochure, NIC, Institute of Youth Affairs.pdf",
+  scienceExhibition: {
+    title: "Science Exhibition on the occasion of 12th National Integration Camp",
+    theme: "Empowering Youth Through Science & Technology To Achieve Viksit & Swarnim Bharat",
+    dates: {
+      start: "2025-12-28",
+      end: "2025-12-30"
+    },
+    timing: "11:00 AM - 7:00 PM",
+    venue: "Assam University, Silchar",
+    brochureImages: [
+      "/science_12th/Brochure-Science Exhibtion, Institute of Youth Affairs 1_page-0001.jpg",
+      "/science_12th/Brochure-Science Exhibtion, Institute of Youth Affairs 1_page-0002.jpg",
+      "/science_12th/Brochure-Science Exhibtion, Institute of Youth Affairs 1_page-0003.jpg",
+      "/science_12th/Brochure-Science Exhibtion, Institute of Youth Affairs 1_page-0004.jpg"
+    ],
+    brochurePDF: "/Brochure-Science Exhibtion, Institute of Youth Affairs 1.pdf",
+    description: "A Science Exhibition will provide a platform to encourage STEM Careers, connect with Scientific Communication, boost Confidence and Self-Esteem, bridge Theory and Practice, enhance Communication and Presentation Abilities, foster Creativity and Innovation, and develop crucial skills like critical thinking, creativity, and public speaking. The exhibition aims to increase interest in science research among youth of Colleges & Universities of North East States.",
+    benefits: [
+      "Encourage STEM Careers",
+      "Connect with Scientific Communication",
+      "Boost Confidence and Self-Esteem",
+      "Bridge Theory and Practice",
+      "Enhance Communication and Presentation Abilities",
+      "Foster Creativity and Innovation",
+      "Develop critical thinking and public speaking skills",
+      "Increase interest in science research",
+      "Platform to showcase research and innovations",
+      "Collaboration with universities and research institutions",
+      "Hands-on experience and confidence-building",
+      "Certificates and recognition"
+    ],
+    specialSessions: [
+      "DigiLocker",
+      "Artificial Intelligence",
+      "E-Governance",
+      "Cyber Security",
+      "Digital Public Infrastructure",
+      "Digital Personal Data Protection"
+    ],
+    seminars: [
+      {
+        date: "2025-12-28",
+        events: [
+          "Inaugural Ceremony of the Science Exhibition & 12th National Integration Camp",
+          "The Key Role of Youth for Future Space Science Exploration",
+          "Empowering Indian Youth for Global Leadership in Science & Its Innovation",
+          "Environment Pollution, Its Impacts and Remediation",
+          "The Part of Youth in Journey Towards Atmanirbhar Bharat in Science Research & Development",
+          "Youth in Atomic Energy: Engaging the Next Generation of Leaders",
+          "Biotechnology Popularization and Skill Development for Youth",
+          "Cultural Programmes"
+        ]
+      },
+      {
+        date: "2025-12-29",
+        events: [
+          "Artificial Intelligence in Science: Literacy, Applications, Security & Its Future",
+          "Career Guidance & opportunities for Youth in Science",
+          "Valedictory Ceremony with Demonstration, Prize & Award Distribution",
+          "Cultural Programmes"
+        ]
+      }
+    ],
+    expectedDepartments: [
+      "Science & Technology",
+      "Biotechnology",
+      "Atomic Energy",
+      "Space (ISRO)",
+      "Earth Sciences",
+      "CSIR",
+      "Electronics & Information Technology",
+      "Coal & Mines",
+      "Environment",
+      "Defence (DRDO)",
+      "PSUs of Government of India"
+    ]
+  },
   missionVision: {
     history: "Since 2014, the renowned social, voluntary and philanthropic society \"Institute of Youth Affairs\" was founded, it celebrates its journey with various annual commitments by yearly organized such National Integration Camp, National Seminars, National Science Awareness Campaign, and workshops to encourage the young minds in Science, to exchange mutually our cultural ties between students & youth of different corner of India, to make an eternal bond between students of all over India with the aim of implementing people-centered and community-oriented development programs with permanent impact on their life.",
     mission: "Our motto is to draw inspiration among students & youth from the vibrant colours of India's national flag saffron, white and green, and the blue chakra that reflects growth amid challenges. We generously organize this National Integration and Youth Leadership Camp since the organisation's inception and it has been 11 years of oath to convey a powerful message among the society by delivering our selfless care and service to bring the most remarkable change of this era.",

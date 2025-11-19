@@ -26,13 +26,11 @@ export function Chatbot() {
   }, [messages])
 
   const faqs = [
+    { q: "Tell me about the National Integration Camp 2025", a: "The 12th National Integration Camp will be held from Dec 24-31, 2025 at Assam University." },
+    { q: "What is the eligibility for the camp?", a: "Youth and students aged 14-22 from North-East states can participate for FREE." },
     { q: "How do I register for events?", a: "Visit our Events page and click on any event to register." },
-    {
-      q: "What is the eligibility criteria?",
-      a: "Most programs are open to youth aged 18-35. Check individual program details.",
-    },
     { q: "How can I file a grievance?", a: "Use our Grievance portal with your details and issue description." },
-    { q: "How do I apply for programs?", a: 'Visit the Programs section and click "Apply Now" on any program.' },
+    { q: "What training is provided at the camp?", a: "Yoga, Aerobics, Drill, Self-Defence, Music, Dance, Career Guidance by ISRO, DRDO experts." },
   ]
 
   const handleSendMessage = async () => {

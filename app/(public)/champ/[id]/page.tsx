@@ -38,6 +38,7 @@ function CampDetailContent() {
   
   const [activeTab, setActiveTab] = useState("overview")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [scienceImageIndex, setScienceImageIndex] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   
@@ -69,8 +70,18 @@ function CampDetailContent() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }
 
+  // Separate navigation functions for main camp brochure
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % camp.brochureImages.length)
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + camp.brochureImages.length) % camp.brochureImages.length)
+
+  // Separate navigation functions for science exhibition brochure
+  const nextScienceImage = () => setScienceImageIndex((prev) => (prev + 1) % (camp.scienceExhibition?.brochureImages.length ?? 1))
+  const prevScienceImage = () => setScienceImageIndex((prev) => (prev - 1 + (camp.scienceExhibition?.brochureImages.length ?? 1)) % (camp.scienceExhibition?.brochureImages.length ?? 1))
+
+  const handleRegister = () => {
+    // Redirect to registration page with camp ID
+    window.location.href = `/champ/${camp.id}/register`
+  }
 
   const handleShare = async () => {
     const url = window.location.href
@@ -243,11 +254,28 @@ function CampDetailContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Science Exhibition Badge */}
+              {camp.scienceExhibition && (
+                <div className="mt-3 bg-gradient-to-r from-orange-500 via-green-500 to-orange-500 p-[2px] rounded-lg">
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-2.5">
+                    <div className="flex items-center gap-2 justify-center">
+                      <Sparkles className="w-4 h-4 text-orange-600" />
+                      <div className="text-center flex-1">
+                        <p className="text-xs font-bold text-orange-600 dark:text-orange-400">SPECIAL EVENT</p>
+                        <p className="text-sm font-extrabold text-gray-900 dark:text-white">Science Exhibition</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Dec 28-30 • 11 AM - 7 PM • FREE</p>
+                      </div>
+                      <Sparkles className="w-4 h-4 text-green-600" />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Actions */}
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2 transform hover:scale-[1.02]">
+              <button onClick={handleRegister} className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2 transform hover:scale-[1.02]">
                 <Award className="w-4 h-4" />
                 Register Now
               </button>
@@ -268,6 +296,7 @@ function CampDetailContent() {
               { id: "schedule", label: "Schedule", icon: Calendar },
               { id: "training", label: "Training", icon: GraduationCap },
               { id: "organizers", label: "Contact", icon: Building2 },
+              ...(camp.scienceExhibition ? [{ id: "science", label: "Science Exhibition", icon: Sparkles }] : []),
             ].map((tab) => {
               const Icon = tab.icon
               return (
@@ -645,8 +674,337 @@ function CampDetailContent() {
                 </div>
               </div>
             )}
+
+            {/* Science Exhibition Tab - COMPACT REDESIGN WITH THEME COLORS */}
+            {activeTab === "science" && camp.scienceExhibition && (
+              <div className="space-y-6">
+                {/* COMPACT Exhibition Header - Balanced Heights, Theme Colors */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-50/50 via-white to-green-50/50 dark:from-orange-900/10 dark:via-slate-800 dark:to-green-900/10 border border-orange-200/30 dark:border-orange-700/30">
+                  {/* Subtle Background Pattern */}
+                  <div className="absolute inset-0 opacity-5 dark:opacity-10" style={{
+                    backgroundImage: `radial-gradient(circle at 10% 20%, rgba(251, 146, 60, 0.3) 0%, transparent 50%),
+                                     radial-gradient(circle at 90% 80%, rgba(34, 197, 94, 0.3) 0%, transparent 50%)`
+                  }} />
+                  
+                  <div className="relative p-5">
+                    {/* BALANCED SPLIT LAYOUT */}
+                    <div className="grid lg:grid-cols-2 gap-5 items-stretch">
+                      {/* LEFT: Compact Brochure (1/2 width) */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="p-1 bg-gradient-to-br from-orange-500 to-orange-600 rounded shadow-sm">
+                            <BookOpen className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          <h4 className="text-xs font-bold text-gray-600 dark:text-gray-400">Exhibition Brochure</h4>
+                        </div>
+                        
+                        {/* Compact Brochure Viewer - MATCHES TEXT HEIGHT */}
+                        <div className="relative flex-1 bg-gradient-to-br from-orange-100/50 to-green-100/50 dark:from-orange-900/20 dark:to-green-900/20 rounded-lg overflow-hidden shadow-lg border-2 border-orange-200/50 dark:border-orange-700/50">
+                          <Image
+                            src={camp.scienceExhibition?.brochureImages[scienceImageIndex] ?? ''}
+                            alt={`Brochure Page ${scienceImageIndex + 1}`}
+                            fill
+                            className="object-contain p-2 cursor-pointer"
+                            onClick={() => setIsLightboxOpen(true)}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-between px-1 z-10">
+                            <button
+                              onClick={prevScienceImage}
+                              className="p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md hover:scale-110 hover:bg-orange-50 transition-all"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5 text-orange-600" />
+                            </button>
+                            <button
+                              onClick={nextScienceImage}
+                              className="p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md hover:scale-110 hover:bg-orange-50 transition-all"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5 text-orange-600" />
+                            </button>
+                          </div>
+                          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-orange-600 to-green-600 text-white px-2 py-0.5 rounded-full shadow-md text-xs font-semibold z-10">
+                            {scienceImageIndex + 1}/{camp.scienceExhibition?.brochureImages.length ?? 0}
+                          </div>
+                        </div>
+                        
+                        {/* Minimal Download Button */}
+                        <button
+                          onClick={() => {
+                            const link = document.createElement("a")
+                            link.href = camp.scienceExhibition?.brochurePDF ?? ''
+                            link.download = "Science-Exhibition-2025-Brochure.pdf"
+                            link.click()
+                            showToast("Downloading exhibition brochure", "success")
+                          }}
+                          className="w-full mt-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-xs flex items-center justify-center gap-1.5 text-gray-700 dark:text-gray-300"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          Download PDF Brochure
+                        </button>
+                      </div>
+
+                      {/* RIGHT: Exhibition Info (1/2 width) - MATCHES BROCHURE HEIGHT */}
+                      <div className="flex flex-col justify-between">
+                        {/* Header Badge */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-600 to-green-600 text-white px-2.5 py-1 rounded-full text-xs font-bold shadow-md">
+                            <Sparkles className="w-3 h-3" />
+                            SPECIAL EVENT
+                          </div>
+                        </div>
+
+                        {/* Title & Theme - Compact */}
+                        <div className="mb-3">
+                          <h2 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white mb-1.5 leading-tight">
+                            Science Exhibition
+                          </h2>
+                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 leading-snug">
+                            {camp.scienceExhibition.theme}
+                          </p>
+                        </div>
+
+                        {/* Compact Info Grid */}
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm px-2 py-2 rounded-lg border border-orange-200/50 dark:border-orange-700/50">
+                            <div className="flex flex-col items-center text-center">
+                              <div className="p-1 bg-gradient-to-br from-orange-500 to-orange-600 rounded mb-1">
+                                <Calendar className="w-3 h-3 text-white" />
+                              </div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">Dec 28-30</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">3 Days</p>
+                            </div>
+                          </div>
+                          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm px-2 py-2 rounded-lg border border-green-200/50 dark:border-green-700/50">
+                            <div className="flex flex-col items-center text-center">
+                              <div className="p-1 bg-gradient-to-br from-green-500 to-green-600 rounded mb-1">
+                                <Clock className="w-3 h-3 text-white" />
+                              </div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">11 AM - 7 PM</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Daily</p>
+                            </div>
+                          </div>
+                          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm px-2 py-2 rounded-lg border border-orange-200/50 dark:border-orange-700/50">
+                            <div className="flex flex-col items-center text-center">
+                              <div className="p-1 bg-gradient-to-br from-orange-500 to-green-600 rounded mb-1">
+                                <MapPin className="w-3 h-3 text-white" />
+                              </div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">Assam Univ</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Silchar</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Compact Description */}
+                        <div className="bg-gradient-to-br from-orange-50/80 to-green-50/80 dark:from-orange-900/20 dark:to-green-900/20 p-3 rounded-lg border border-orange-200/30 dark:border-orange-700/30 flex-1">
+                          <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {camp.scienceExhibition?.description.substring(0, 180)}...
+                          </p>
+                          <div className="mt-2 flex items-center gap-1 text-orange-600 dark:text-orange-400">
+                            <Award className="w-3 h-3" />
+                            <span className="text-xs font-semibold">Free for all participants</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* MODERN About Exhibition */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-blue-50/50 dark:from-slate-800/50 dark:to-blue-900/20 p-6 border border-gray-200/50 dark:border-slate-700/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg shadow-lg">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">About the Exhibition</h3>
+                  </div>
+                  <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {camp.scienceExhibition?.description}
+                  </p>
+                </div>
+
+                {/* STUNNING Benefits Grid with Icons */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg shadow-lg">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      12 Key Benefits for Participants
+                    </h3>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {camp.scienceExhibition?.benefits.map((benefit, idx) => (
+                      <div 
+                        key={idx} 
+                        className="group relative overflow-hidden bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-800 dark:to-purple-900/20 p-4 rounded-xl border-2 border-purple-200/50 dark:border-purple-700/50 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
+                      >
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+                        <div className="relative flex items-start gap-3">
+                          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg shadow-md flex-shrink-0">
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-tight">{benefit}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* NEON Tech Sessions */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-900/10 to-indigo-900/10 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 border-2 border-blue-200/30 dark:border-blue-700/30">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg shadow-lg">
+                      <Sparkles className="w-6 h-6 text-white animate-pulse" />
+                    </div>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      Special Technology Sessions
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {camp.scienceExhibition?.specialSessions.map((session, idx) => (
+                      <div
+                        key={idx}
+                        className="group relative px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-bold text-sm shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-300 cursor-pointer"
+                      >
+                        <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300" />
+                        <span className="relative z-10">{session}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-start gap-2 bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-xl">
+                    <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                      <strong>Hands-on sessions</strong> by industry experts on cutting-edge technologies shaping India's digital future
+                    </p>
+                  </div>
+                </div>
+
+                {/* Science-Specific Seminars */}
+                <div>
+                  <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-green-600" />
+                    Science Exhibition Seminars
+                  </h3>
+                  <div className="space-y-4">
+                    {camp.scienceExhibition.seminars.map((day, idx) => (
+                      <div key={idx} className="bg-white dark:bg-slate-700/50 rounded-lg border border-gray-200 dark:border-slate-600 overflow-hidden">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 font-bold text-sm">
+                          {new Date(day.date).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                        </div>
+                        <div className="p-4 space-y-2">
+                          {day.events.map((event, eventIdx) => (
+                            <div key={eventIdx} className="flex items-start gap-2 text-sm">
+                              <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-1.5 flex-shrink-0" />
+                              <span className="text-gray-700 dark:text-gray-300">{event}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-3 italic">
+                    🔬 <strong>Note:</strong> These are science-focused seminars in addition to the main camp schedule
+                  </p>
+                </div>
+
+                {/* Expected Government Departments */}
+                <div>
+                  <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-orange-600" />
+                    Expected Participating Departments
+                  </h3>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {camp.scienceExhibition.expectedDepartments.map((dept, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border-l-4 border-orange-500 shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{dept}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-3 italic">
+                    * Major Government departments, PSUs, and research organizations will showcase their innovations
+                  </p>
+                </div>
+
+                {/* Call to Action */}
+                <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-xl shadow-xl">
+                  <h3 className="text-xl font-bold mb-2">🚀 Don't Miss This Opportunity!</h3>
+                  <p className="text-sm mb-4 opacity-90">
+                    Experience cutting-edge science, meet ISRO & DRDO scientists, explore innovations, and build your future in STEM.
+                    <strong> Completely FREE for all camp participants!</strong>
+                  </p>
+                  <div className="flex gap-3">
+                    <button className="flex-1 px-4 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Register for Camp
+                    </button>
+                    <button className="px-4 py-3 bg-white/20 hover:bg-white/30 rounded-lg transition-all flex items-center justify-center gap-2">
+                      <Share2 className="w-4 h-4" />
+                      Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Lightbox Modal for Brochure Viewing */}
+        {isLightboxOpen && (
+          <div 
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <button
+              onClick={() => setIsLightboxOpen(false)}
+              className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all z-10"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+            
+            <div className="relative max-w-4xl w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <Image
+                src={activeTab === "science" && camp.scienceExhibition 
+                  ? camp.scienceExhibition.brochureImages[scienceImageIndex]
+                  : camp.brochureImages[currentImageIndex]
+                }
+                alt={`Brochure Page ${activeTab === "science" ? scienceImageIndex + 1 : currentImageIndex + 1}`}
+                fill
+                className="object-contain"
+              />
+              
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  activeTab === "science" ? prevScienceImage() : prevImage();
+                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white rounded-full shadow-2xl hover:scale-110 transition-all"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-900" />
+              </button>
+              
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  activeTab === "science" ? nextScienceImage() : nextImage();
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white rounded-full shadow-2xl hover:scale-110 transition-all"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-900" />
+              </button>
+              
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 px-4 py-2 rounded-full shadow-xl">
+                <span className="text-sm font-bold text-gray-900">
+                  {activeTab === "science" && camp.scienceExhibition 
+                    ? `${scienceImageIndex + 1} / ${camp.scienceExhibition.brochureImages.length}`
+                    : `${currentImageIndex + 1} / ${camp.brochureImages.length}`
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
