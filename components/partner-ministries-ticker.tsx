@@ -8,32 +8,32 @@ export function PartnerMinistriesTicker() {
     {
       id: 1,
       name: "Department of Science & Technology",
-      logo: "/logo/home-logo.jpg",
+      logo: "/logo/images.png",
     },
     {
       id: 2,
       name: "Ministry of Youth Affairs & Sports",
-      logo: "/logo/Department_of_Science_and_Technology_India.png",
+      logo: "/logo/Ministry_sport.png",
     },
     {
       id: 3,
       name: "Ministry of Education",
-      logo: "/logo/Department_of_Science_and_Technology_India.png",
+      logo: "/logo/download.jpg",
     },
     {
       id: 4,
       name: "Ministry of Skill Development",
-      logo: "/logo/Department_of_Science_and_Technology_India.png",
+      logo: "/logo/MSDE.png",
     },
     {
       id: 5,
       name: "Digital India Initiative",
-      logo: "/logo/home-logo.jpg",
+      logo: "/logo/dig.jpg",
     },
     {
       id: 6,
       name: "Ministry of Culture",
-      logo: "/logo/home-logo.jpg",
+      logo: "/logo/Culture.jpeg",
     },
   ]
 

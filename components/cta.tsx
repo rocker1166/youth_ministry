@@ -93,7 +93,7 @@ export function CTA() {
                   <div className="flex-1">
                     <p className="font-bold text-white text-sm mb-1.5 tracking-wide">ADDRESS</p>
                     <p className="text-white/90 text-sm leading-relaxed">
-                      Kolkata, West Bengal
+                      11/1, S.N. Banerjee Road, Barrackpore, Kolkata – 700 120
                       <br />
                       India
                     </p>
@@ -109,7 +109,7 @@ export function CTA() {
                   <div className="flex-1">
                     <p className="font-bold text-white text-sm mb-1.5 tracking-wide">PHONE</p>
                     <p className="text-white/90 text-sm leading-relaxed">
-                      +91-11-XXXX-XXXX
+                      +91-74398 41005
                       <br />
                       Mon-Sat 9AM-6PM
                     </p>

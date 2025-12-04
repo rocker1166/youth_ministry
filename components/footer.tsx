@@ -86,12 +86,12 @@ export function Footer() {
   }, [])
 
   const socialLinks = [
-    { icon: Linkedin, url: settings.social_linkedin || "#", label: "LinkedIn" },
-    { icon: Facebook, url: settings.social_facebook || "#", label: "Facebook" },
-    { icon: Twitter, url: settings.social_twitter || "#", label: "Twitter" },
-    { icon: Youtube, url: settings.social_youtube || "#", label: "YouTube" },
-    { icon: Github, url: settings.social_github || "#", label: "Github" },
-    { icon: Instagram, url: settings.social_instagram || "#", label: "Instagram" },
+    { icon: Linkedin || "#", label: "LinkedIn" },
+    { icon: Facebook || "#", label: "Facebook" },
+    { icon: Twitter || "#", label: "Twitter" },
+    { icon: Youtube || "#", label: "YouTube" },
+    { icon: Github || "#", label: "Github" },
+    { icon: Instagram || "#", label: "Instagram" },
   ]
 
   return (
@@ -119,6 +119,31 @@ export function Footer() {
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Contact Information Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 pb-8 border-b border-white/10">
+          <div className="flex items-start gap-4">
+            <MapPin className="w-5 h-5 text-blue-400 shrink-0 mt-1" />
+            <div>
+              <p className="font-semibold text-white mb-2">Address</p>
+              <p className="text-sm text-white/70">11/1, S.N. Banerjee Road, Barrackpore, Kolkata – 700 120</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <Phone className="w-5 h-5 text-blue-400 shrink-0 mt-1" />
+            <div>
+              <p className="font-semibold text-white mb-2">Phone</p>
+              <p className="text-sm text-white/70">+91-74398 41005</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <Mail className="w-5 h-5 text-blue-400 shrink-0 mt-1" />
+            <div>
+              <p className="font-semibold text-white mb-2">Email</p>
+              <p className="text-sm text-white/70">youthaffairs14@gmail.com</p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
           {/* Brand Section */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-6">

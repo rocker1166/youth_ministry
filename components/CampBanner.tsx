@@ -48,7 +48,7 @@ export function CampBanner() {
 
                   {/* Highlights */}
                   <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">
-                    500+ Participants | Training, Seminars by ISRO, DRDO & Defence Experts | Cultural Programs
+                    500+ Participants | Training, Seminars by ISRO, DRDO, DBT & Defence Experts | Cultural Programs
                   </p>
                 </div>
 

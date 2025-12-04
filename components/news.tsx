@@ -12,7 +12,7 @@ const newsItems = [
       "Institute launches comprehensive digital skills training initiative to reach 100,000 youth across India.",
     date: "November 15, 2024",
     category: "Program Launch",
-    image: "/digital-training.jpg",
+    image: "/galary/1.jpeg",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const newsItems = [
       "Over 5,000 young leaders from across India participated in the annual summit discussing future opportunities.",
     date: "November 10, 2024",
     category: "Event",
-    image: "/youth-summit.jpg",
+    image: "/galary/18.jpeg",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const newsItems = [
     description: "Celebrating successful disbursement of ₹10 crore to 500+ young entrepreneurs across various sectors.",
     date: "November 5, 2024",
     category: "Achievement",
-    image: "/entrepreneurship-success.jpg",
+    image: "/galary/23.jpeg",
   },
 ]
 
