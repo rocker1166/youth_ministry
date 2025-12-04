@@ -115,7 +115,7 @@ export function Hero() {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white shadow-md">
                     <img 
-                      src="/logo/home_logo.jpg" 
+                      src="/logo/Logo.jpg" 
                       alt="Institute Logo"
                       className="w-full h-full object-cover"
                     />

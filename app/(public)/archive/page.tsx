@@ -1,71 +1,58 @@
 "use client"
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Timeline } from "@/components/ui/timeline";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Book, Video } from "lucide-react";
+import { Download, FileText, Book, Video, Archive, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const resources = [
-  {
-    id: 1,
-    title: "Youth Career Guidelines 2024",
-    description: "Comprehensive guide for career planning and professional development",
-    category: "Guidelines",
-    icon: FileText,
-    download: true,
-  },
-  {
-    id: 2,
-    title: "Skill Development Handbook",
-    description: "Complete resource for skill assessment and training programs",
-    category: "Handbook",
-    icon: Book,
-    download: true,
-  },
-  {
-    id: 3,
-    title: "Entrepreneurship Toolkit",
-    description: "Tools and templates for starting and managing a business",
-    category: "Toolkit",
-    icon: FileText,
-    download: true,
-  },
-  {
-    id: 4,
-    title: "Leadership Development Videos",
-    description: "Video series on essential leadership competencies",
-    category: "Video",
-    icon: Video,
-    download: false,
-  },
-  {
-    id: 5,
-    title: "Digital Literacy Guide",
-    description: "Step-by-step guide to essential digital skills",
-    category: "Guide",
-    icon: Book,
-    download: true,
-  },
-  {
-    id: 6,
-    title: "Program Application Templates",
-    description: "Ready-to-use templates for program applications",
-    category: "Templates",
-    icon: FileText,
-    download: true,
-  },
-   {
-    id: 7,
-    title: "Annual Report 2023",
-    description: "A complete report of our activities and impact in 2023.",
-    category: "Report",
-    icon: Book,
-    download: true,
-  },
-];
+interface ArchiveResource {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  icon: typeof FileText | typeof Book | typeof Video;
+  download: boolean;
+}
+
+const getIconForCategory = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'video':
+      return Video;
+    case 'book':
+    case 'handbook':
+    case 'guide':
+      return Book;
+    default:
+      return FileText;
+  }
+};
 
 export default function ArchivePage() {
+  const [resources, setResources] = useState<ArchiveResource[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchArchiveResources();
+  }, []);
+
+  const fetchArchiveResources = async () => {
+    try {
+      const res = await fetch("/api/archive");
+      if (res.ok) {
+        const data = await res.json();
+        setResources(data);
+      } else {
+        setResources([]);
+      }
+    } catch (error) {
+      console.error("Error fetching archive resources:", error);
+      setResources([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const timelineData = [
     {
       title: "2024",
@@ -212,37 +199,61 @@ export default function ArchivePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12 text-neutral-900 dark:text-white">Archived Documents</h2>
-            <ScrollArea className="h-96 w-full rounded-md border bg-slate-50 dark:bg-neutral-900/50 p-4">
-                <ul className="space-y-4">
-                  {resources.map((resource) => {
-                    const IconComponent = resource.icon
-                    return (
-                      <li key={resource.id} className="p-4 border dark:border-neutral-800 rounded-lg flex items-center justify-between hover:bg-white dark:hover:bg-neutral-800/50 transition-colors shadow-sm">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                              <IconComponent size={24} />
+            
+            {loading ? (
+              <div className="flex items-center justify-center h-96">
+                <Loader2 className="animate-spin h-12 w-12 text-primary" />
+              </div>
+            ) : resources.length === 0 ? (
+              /* Empty State Banner */
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-white/20">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mb-6">
+                    <Archive className="w-10 h-10 text-primary" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-foreground mb-3">No Archived Documents Yet</h3>
+                  <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+                    We haven't archived any documents yet. Check back soon for guidelines, handbooks, reports, and other valuable resources from the Institute of Youth Affairs.
+                  </p>
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-blue-500/10 px-6 py-3 rounded-lg border border-primary/20">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-semibold text-foreground">Documents will be added as they become available</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ScrollArea className="h-96 w-full rounded-md border bg-slate-50 dark:bg-neutral-900/50 p-4">
+                  <ul className="space-y-4">
+                    {resources.map((resource) => {
+                      const IconComponent = getIconForCategory(resource.category)
+                      return (
+                        <li key={resource.id} className="p-4 border dark:border-neutral-800 rounded-lg flex items-center justify-between hover:bg-white dark:hover:bg-neutral-800/50 transition-colors shadow-sm">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <IconComponent size={24} />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-neutral-800 dark:text-neutral-100">{resource.title}</h3>
+                              <p className="text-sm text-neutral-600 dark:text-neutral-400">{resource.description}</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-neutral-800 dark:text-neutral-100">{resource.title}</h3>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400">{resource.description}</p>
-                          </div>
-                        </div>
-                        {resource.download ? (
-                            <Button className="bg-primary hover:bg-primary/90 gap-2 shrink-0 ml-4">
-                              <Download size={18} />
-                              <span className="hidden sm:inline">Download</span>
-                            </Button>
-                          ) : (
-                            <Button variant="outline" className="gap-2 bg-transparent shrink-0 ml-4">
-                              <Video size={18} />
-                              <span className="hidden sm:inline">Watch Now</span>
-                            </Button>
-                          )}
-                      </li>
-                    )
-                  })}
-                </ul>
-            </ScrollArea>
+                          {resource.download ? (
+                              <Button className="bg-primary hover:bg-primary/90 gap-2 shrink-0 ml-4">
+                                <Download size={18} />
+                                <span className="hidden sm:inline">Download</span>
+                              </Button>
+                            ) : (
+                              <Button variant="outline" className="gap-2 bg-transparent shrink-0 ml-4">
+                                <Video size={18} />
+                                <span className="hidden sm:inline">Watch Now</span>
+                              </Button>
+                            )}
+                        </li>
+                      )
+                    })}
+                  </ul>
+              </ScrollArea>
+            )}
           </div>
         </section>
 

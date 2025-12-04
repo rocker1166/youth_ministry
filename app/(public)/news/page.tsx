@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, User, ArrowRight, Loader2 } from "lucide-react"
+import { Calendar, User, ArrowRight, Loader2, Newspaper } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface NewsArticle {
@@ -23,7 +23,8 @@ interface NewsArticle {
 }
 
 // Dummy fallback data
-const dummyNews: NewsArticle[] = [
+const dummyNews: NewsArticle[] = 
+[
   {
     id: "1",
     title: "New Digital Literacy Program Launched Across 50 Cities",
@@ -112,7 +113,7 @@ const dummyNews: NewsArticle[] = [
 ]
 
 export default function NewsPage() {
-  const [news, setNews] = useState<NewsArticle[]>(dummyNews)
+  const [news, setNews] = useState<NewsArticle[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -129,24 +130,14 @@ export default function NewsPage() {
           ? data.sort((a: NewsArticle, b: NewsArticle) => 
               new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             )
-          : dummyNews.sort((a, b) => 
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            )
+          : []
         setNews(sortedData)
       } else {
-        // Sort dummy data by created_at
-        const sortedDummy = [...dummyNews].sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
-        setNews(sortedDummy)
+        setNews([])
       }
     } catch (error) {
       console.error("Error fetching news:", error)
-      // Sort dummy data by created_at
-      const sortedDummy = [...dummyNews].sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-      setNews(sortedDummy)
+      setNews([])
     } finally {
       setLoading(false)
     }
@@ -185,8 +176,28 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* News Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      {/* Empty State Banner */}
+      {!loading && news.length === 0 ? (
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-white/20">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mb-6">
+                <Newspaper className="w-10 h-10 text-primary" />
+              </div>
+              <h2 className="text-3xl font-bold text-foreground mb-3">No News Available Yet</h2>
+              <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+                We haven't published any news articles yet. Check back soon for the latest updates, announcements, and success stories from the Institute of Youth Affairs.
+              </p>
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-blue-500/10 px-6 py-3 rounded-lg border border-primary/20">
+                <Calendar className="w-5 h-5 text-primary" />
+                <span className="text-sm font-semibold text-foreground">Stay tuned for upcoming announcements</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        /* News Grid */
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Featured News (Large) - Most Recent Article */}
@@ -298,6 +309,7 @@ export default function NewsPage() {
           </div>
         </div>
       </section>
+      )}
     </main>
   )
 }

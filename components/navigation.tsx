@@ -58,14 +58,14 @@ export function Navigation() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <button 
+              {/* <button 
                 onClick={toggleLanguage}
                 className="hover:text-gray-200 transition-colors text-xs font-medium"
                 title="Toggle Language"
               >
                 {language === "en" ? "हिंदी" : "English"}
-              </button>
-              <span className="hidden sm:inline">|</span>
+              </button> */}
+            
               <button 
                 onClick={increaseFontSize}
                 className="hover:text-gray-200 transition-colors text-xs font-medium hidden sm:inline"
@@ -92,7 +92,7 @@ export function Navigation() {
           <Link href="/" className="flex items-center gap-4">
             <div className="flex items-center gap-3">
              <Image
-                src="/logo/home_logo.jpg"
+                src="/logo/Logo.jpg"
                 alt="Institute of Youth Affairs Logo"
                 width={50}
                 height={50}
