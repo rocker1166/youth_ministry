@@ -26,7 +26,7 @@ export default function AboutPage() {
     },
     {
       icon: Users,
-      title: "Scientific Education",
+      title: "Scientific Programs",
       description:
         "To foster the spirit of Literacy, Scientific and Technical Education. Supporting Science research and innovation in youth-related issues through national seminars, training programs, and expert guidance.",
     },
@@ -56,10 +56,6 @@ export default function AboutPage() {
     },
     {
       name: "Ms Moumita Sen",
-      designation: "Member Executive",
-    },
-    {
-      name: "Shri Chandan Ghosh",
       designation: "Member Executive",
     },
     {

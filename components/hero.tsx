@@ -26,58 +26,58 @@ export function Hero() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              <span className="text-sm font-semibold text-primary">Empowering India's Youth</span>
+              <span className="text-sm font-semibold text-primary">Empowering India for Viksit and Swaynim Bharat</span>
             </div>
 
             {/* Main Heading - Government Style */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
                 <span className="block">Building</span>
+                <span className="block">for</span>
                 <span className="text-primary block">
                   <TypingText 
-                    texts={["Innovators", "Entrepreneurs", "Changemakers", "Visionaries"]}
+                    texts={["Science", "Innovation", "Progress", "Excellence"]}
                     typingSpeed={120}
                     deletingSpeed={80}
                     pauseDuration={2500}
                   />
                 </span>
-                <span className="block">for Tomorrow</span>
+                <span className="block">Tomorrow</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl">
-                The Institute of Youth Affairs is dedicated to developing holistic personality development programs, skill
-                enhancement, and career guidance for youth across India.
+                The Institute of Youth Affairs fosters scientific excellence through programs related to biotechnology and generalized science, empowering youth with knowledge and skills for India's scientific advancement.
               </p>
             </div>
 
             {/* CTA Buttons - Government Style */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button size="lg" className="bg-primary hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all group">
-                Apply for Programs 
-                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-              </Button>
-              <Button size="lg" variant="outline" className="border-2 border-gray-300 hover:border-primary hover:text-primary group">
-                Learn More
-                <ExternalLink className="ml-2 group-hover:scale-110 transition-transform" size={18} />
-              </Button>
+              <Link href="https://forms.gle/GzCzjRNEWe8Xo3VJ7" target="_blank">
+                <Button size="lg" className="bg-primary hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all group w-full sm:w-auto">
+                  Apply for Camp'25
+                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+                </Button>
+              </Link>
+              <Link href="/champ">
+                <Button size="lg" variant="outline" className="border-2 border-gray-300 hover:border-primary hover:text-primary group w-full sm:w-auto">
+                  Upcoming Events
+                  <ExternalLink className="ml-2 group-hover:scale-110 transition-transform" size={18} />
+                </Button>
+              </Link>
             </div>
 
             {/* Quick Links - Government Portal Style */}
             <div className="flex flex-wrap gap-4 pt-6 text-sm">
               <a 
-                href="/INSTITUTE_OF_YOUTH_AFFAIRS.pdf" 
+                href="/Brochure-Science Exhibtion, Institute of Youth Affairs 1.pdf" 
                 download
                 className="text-primary hover:underline font-medium flex items-center gap-1"
               >
                 <Download size={16} />
-                Program Brochure
+                Science Exhibition Brochure
               </a>
               <span className="text-gray-300">|</span>
-              <Link href="/events" className="text-primary hover:underline font-medium">
+              <Link href="/champ" className="text-primary hover:underline font-medium">
                 Upcoming Events
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/apply" className="text-primary hover:underline font-medium">
-                Application Form
               </Link>
             </div>
 
@@ -121,8 +121,8 @@ export function Hero() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-1">Digital India Initiative</p>
-                    <p className="text-xs text-gray-600">Ministry of Youth Affairs & Sports</p>
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Institute of Youth Affairs</p>
+                    <p className="text-xs text-gray-600">Scientific Programs & Youth Development</p>
                   </div>
                 </div>
               </div>

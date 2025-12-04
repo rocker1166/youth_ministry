@@ -134,7 +134,7 @@ export function Footer() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-1">Institute of Youth Affairs</h3>
-                <p className="text-sm text-white/60">One Portal For All Government Services</p>
+                <p className="text-sm text-white/60">An institute for youth empowerment in science and other sections</p>
               </div>
             </div>
 
