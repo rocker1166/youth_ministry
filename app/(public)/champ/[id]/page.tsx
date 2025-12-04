@@ -79,12 +79,12 @@ function CampDetailContent() {
   const prevScienceImage = () => setScienceImageIndex((prev) => (prev - 1 + (camp.scienceExhibition?.brochureImages.length ?? 1)) % (camp.scienceExhibition?.brochureImages.length ?? 1))
 
   const handleRegister = () => {
-    // Redirect to registration page with camp ID
-    window.location.href = `/champ/${camp.id}/register`
+    // Open registration form in a new tab
+    window.open(`https://forms.gle/GzCzjRNEWe8Xo3VJ7`, '_blank')
   }
 
   const handleShare = async () => {
-    const url = window.location.href
+    const url = "https://forms.gle/GzCzjRNEWe8Xo3VJ7"  //gform for registration
     if (navigator.share) {
       try {
         await navigator.share({ title: camp.title, text: camp.theme, url })
@@ -317,7 +317,7 @@ function CampDetailContent() {
           </div>
 
           {/* Tab Content */}
-          <div className="p-5 max-h-[600px] overflow-y-auto">
+          <div className="p-5">
             {/* Overview */}
             {activeTab === "overview" && (
               <div className="space-y-5">
@@ -935,11 +935,14 @@ function CampDetailContent() {
                     <strong> Completely FREE for all camp participants!</strong>
                   </p>
                   <div className="flex gap-3">
-                    <button className="flex-1 px-4 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2">
+                  <Link href="https://forms.gle/GzCzjRNEWe8Xo3VJ7" target="_blank" className="flex-1 px-4 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2">
                       <Calendar className="w-4 h-4" />
                       Register for Camp
-                    </button>
-                    <button className="px-4 py-3 bg-white/20 hover:bg-white/30 rounded-lg transition-all flex items-center justify-center gap-2">
+                    </Link>
+                    <button 
+                      onClick={handleShare}
+                      className="px-4 py-3 bg-white/20 hover:bg-white/30 rounded-lg transition-all flex items-center justify-center gap-2"
+                    >
                       <Share2 className="w-4 h-4" />
                       Share
                     </button>
