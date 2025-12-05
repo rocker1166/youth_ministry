@@ -122,7 +122,7 @@ address = "11/1, S. N. Banerjee Road, BKP., Kolkata – 700 120"
 phone = "033 7148 1515"
 mobile = "7439841005"
 email = "youthaffairs14@gmail.com"
-registration_url = "/champ or /champ/nic-2025"
+registration_url = "/camp or /camp/nic-2025"
 
 [camp.leadership]
 chief_advisor = "Prof. Tathagata Roy (Fmr Governor: Tripura, Meghalaya, Arunachal Pradesh)"

@@ -1,36 +1,31 @@
+"use client"
+
 import Link from "next/link"
-import { Calendar, MapPin, Users, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Calendar, MapPin, Users } from "lucide-react"
+import { CAMP_2025 } from "@/app/(public)/camp/data"
 
 export default function UpcomingEvents() {
-  const events = [
+  // Create event cards from the actual camp data
+  const campEvents = [
     {
-      id: 1,
-      title: "Youth Leadership Summit 2025",
-      date: "2025-12-15",
-      location: "New Delhi",
-      attendees: 500,
-      category: "Leadership",
+      id: CAMP_2025.id,
+      title: CAMP_2025.title,
+      date: CAMP_2025.startDate,
+      location: CAMP_2025.location,
+      attendees: CAMP_2025.expectedParticipants,
+      category: CAMP_2025.category,
+      status: CAMP_2025.status === "upcoming" ? "Registrations Open" : "Closed",
+    },
+    // Science Exhibition as a separate event
+    ...(CAMP_2025.scienceExhibition ? [{
+      id: `${CAMP_2025.id}-science`,
+      title: CAMP_2025.scienceExhibition.title,
+      date: CAMP_2025.scienceExhibition.dates.start,
+      location: CAMP_2025.scienceExhibition.venue,
+      attendees: CAMP_2025.expectedParticipants,
+      category: "Science & Technology",
       status: "Registrations Open",
-    },
-    {
-      id: 2,
-      title: "Digital Skills Workshop",
-      date: "2025-12-20",
-      location: "Mumbai",
-      attendees: 200,
-      category: "Technology",
-      status: "Limited Seats",
-    },
-    {
-      id: 3,
-      title: "Startup Pitch Competition",
-      date: "2025-12-28",
-      location: "Bangalore",
-      attendees: 300,
-      category: "Entrepreneurship",
-      status: "Registrations Open",
-    },
+    }] : []),
   ]
 
   return (
@@ -45,70 +40,68 @@ export default function UpcomingEvents() {
           </p>
         </div>
 
-        <div className="grid gap-6 mb-8">
-          {events.map((event) => (
-            <div
-              key={event.id}
-              className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-primary hover:shadow-lg transition-all duration-300 group"
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white">
-                      {event.category}
-                    </span>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                      event.status === "Limited Seats" 
-                        ? "bg-orange-100 text-orange-700" 
-                        : "bg-green-100 text-green-700"
-                    }`}>
-                      {event.status}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                    {event.title}
-                  </h3>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      {new Date(event.date).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
-                      })}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      {event.location}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-primary" />
-                      {event.attendees} expected
-                    </span>
+        {/* Horizontal Scrollable Container - Show 3 at a time */}
+        <div className="relative overflow-hidden">
+          <div 
+            className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-200"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#1e40af #e5e7eb'
+            }}
+          >
+            {campEvents.map((event) => (
+              <Link 
+                key={event.id}
+                href={`/camp/${CAMP_2025.id}`}
+                className="flex-shrink-0 w-full md:w-[calc(33.333%-1rem)] snap-start"
+              >
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-primary hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
+                  <div className="flex flex-col gap-4 h-full">
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white">
+                          {event.category}
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                          {event.status}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                        {event.title}
+                      </h3>
+                      
+                      <div className="flex flex-col gap-2 text-sm text-gray-600">
+                        <span className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span className="truncate">
+                            {new Date(event.date).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric"
+                            })}
+                          </span>
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-primary flex-shrink-0" />
+                          {event.attendees} expected
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <Link href={`/events/${event.id}`}>
-                  <Button className="bg-primary hover:bg-primary-700 text-white group-hover:scale-105 transition-transform">
-                    Register Now
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
-        
-        <div className="text-center">
-          <Link 
-            href="/events" 
-            className="inline-flex items-center gap-2 text-primary font-semibold hover:underline text-lg group"
-          >
-            View All Events 
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+
+        {/* Scroll Indicator */}
+        <div className="text-center mt-4 text-sm text-gray-500">
+          Scroll horizontally to view all events
         </div>
       </div>
     </section>

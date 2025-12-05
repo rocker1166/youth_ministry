@@ -109,9 +109,9 @@ export function Footer() {
               size="lg"
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-full px-8"
             >
-              <Link href="/contact" className="flex items-center gap-2">
+              <a href="mailto:youthaffairs14@gmail.com?subject=Support Request&body=Hello, I need support regarding..." className="flex items-center gap-2">
                 Get in touch <ArrowRight size={18} />
-              </Link>
+              </a>
             </Button>
           </div>
         </div>

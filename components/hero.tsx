@@ -1,12 +1,60 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Download, ExternalLink } from "lucide-react"
+import { ArrowRight, Download, ExternalLink, Calendar, Newspaper } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { TypingText } from "./typing-text"
 
+interface NewsArticle {
+  id: string
+  title: string
+  slug?: string
+  content: string
+  excerpt: string
+  featured_image: string
+  category: string
+  status: string
+  published_at: string
+  created_at: string
+  author?: string
+  tags?: string[]
+}
+
 export function Hero() {
+  const [latestNews, setLatestNews] = useState<NewsArticle | null>(null)
+  const [loadingNews, setLoadingNews] = useState(true)
+
+  useEffect(() => {
+    fetchLatestNews()
+  }, [])
+
+  const fetchLatestNews = async () => {
+    try {
+      const res = await fetch("/api/news?limit=1")
+      if (res.ok) {
+        const data = await res.json()
+        if (data && data.length > 0) {
+          setLatestNews(data[0])
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching latest news:", error)
+    } finally {
+      setLoadingNews(false)
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  }
+
   return (
     <section className="relative bg-gradient-to-r from-primary-50 via-white to-primary-50 overflow-hidden">
       {/* Background Pattern - Government Style */}
@@ -96,6 +144,56 @@ export function Hero() {
                 <p className="text-sm text-gray-600 font-medium">States</p>
               </div>
             </div>
+
+            {/* Latest News Card - Conditional Render */}
+            {!loadingNews && latestNews && (
+              <Link href={`/news/${latestNews.id}`} className="block">
+                <div className="mt-8 bg-white/80 backdrop-blur-xl rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/20 hover:border-primary/30 group cursor-pointer">
+                  <div className="flex flex-col sm:flex-row gap-4 p-4">
+                    {/* News Image */}
+                    <div className="relative w-full sm:w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                      <Image
+                        src={latestNews.featured_image || "/placeholder.svg"}
+                        alt={latestNews.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    
+                    {/* News Content */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Newspaper className="w-4 h-4 text-primary" />
+                          <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-primary/10 text-primary rounded-full">
+                            {latestNews.category}
+                          </span>
+                          <span className="inline-block px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                            Latest News
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                          {latestNews.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                          {latestNews.excerpt}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Calendar size={12} />
+                          {formatDate(latestNews.published_at)}
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-primary font-semibold">
+                          Read More
+                          <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
           </div>
 
           {/* Hero Image - Government Portal Style */}
@@ -127,10 +225,6 @@ export function Hero() {
                 </div>
               </div>
             </div>
-
-          
-
-           
           </div>
         </div>
       </div>

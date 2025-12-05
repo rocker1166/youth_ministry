@@ -1,14 +1,23 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Calendar, MapPin, Users, Award, BookOpen, GraduationCap, Sparkles, ArrowRight } from "lucide-react"
 import { CAMP_2025 } from "./data"
 import { CampListSkeleton } from "@/components/CampSkeleton"
+import { shuffleArray, getGalleryImages } from "./utils"
 
 function ChampPageContent() {
   const camp = CAMP_2025
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
+
+  // Shuffle gallery images on mount
+  useEffect(() => {
+    const allImages = getGalleryImages()
+    const shuffled = shuffleArray(allImages)
+    setGalleryImages(shuffled.slice(0, 6)) // Display 6 random images
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
@@ -33,19 +42,42 @@ function ChampPageContent() {
           </p>
 
           <Link
-            href={`/champ/${camp.id}`}
+            href={`/camp/${camp.id}`}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105"
           >
             View Full Details
             <ArrowRight className="w-4 h-4" />
           </Link>
+
+          {/* Photo Gallery Section */}
+          {galleryImages.length > 0 && (
+            <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+              <h3 className="text-xl font-bold text-foreground mb-6">Camp Memories</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {galleryImages.map((image, idx) => (
+                  <div
+                    key={idx}
+                    className="relative h-48 rounded-lg overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md hover:shadow-2xl transition-all duration-300 border border-white/20 hover:border-primary/30 group"
+                  >
+                    <Image
+                      src={image}
+                      alt={`Camp Gallery ${idx + 1}`}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Compact Featured Camp Card with Glassmorphism */}
       <section className="pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-          <Link href={`/champ/${camp.id}`}>
+          <Link href={`/camp/${camp.id}`}>
             <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/20 hover:border-primary/20 group">
               <div className="grid md:grid-cols-2 gap-4 p-5">
                 {/* Left: Image */}
@@ -217,7 +249,7 @@ function ChampPageContent() {
             Be part of India's largest youth integration initiative
           </p>
           <Link
-            href={`/champ/${camp.id}`}
+            href={`/camp/${camp.id}`}
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary hover:bg-gray-100 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
           >
             Explore Full Details

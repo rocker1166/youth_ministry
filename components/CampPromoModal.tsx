@@ -19,7 +19,7 @@ export function CampPromoModal() {
   }
 
   const handleExplore = () => {
-    router.push("/champ/nic-2025")
+    router.push("/camp/nic-2025")
   }
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
