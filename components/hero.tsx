@@ -80,8 +80,7 @@ export function Hero() {
             {/* Main Heading - Government Style */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                <span className="block">Building</span>
-                <span className="block">for</span>
+                <span className="block">Building for</span>
                 <span className="text-primary block">
                   <TypingText 
                     texts={["Science", "Innovation", "Progress", "Excellence"]}
@@ -105,7 +104,7 @@ export function Hero() {
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
                 </Button>
               </Link>
-              <Link href="/champ">
+              <Link href="/camp">
                 <Button size="lg" variant="outline" className="border-2 border-gray-300 hover:border-primary hover:text-primary group w-full sm:w-auto">
                   Upcoming Events
                   <ExternalLink className="ml-2 group-hover:scale-110 transition-transform" size={18} />
@@ -124,7 +123,7 @@ export function Hero() {
                 Science Exhibition Brochure
               </a>
               <span className="text-gray-300">|</span>
-              <Link href="/champ" className="text-primary hover:underline font-medium">
+              <Link href="/camp" className="text-primary hover:underline font-medium">
                 Upcoming Events
               </Link>
             </div>

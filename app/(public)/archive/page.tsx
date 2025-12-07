@@ -63,7 +63,7 @@ export default function ArchivePage() {
           </p>
           <div className="flex gap-4">
             <Image
-              src="/placeholder.jpg"
+              src="/galary/3.jpeg"
               alt="National Integration Camp 2024"
               width={200}
               height={200}
@@ -82,14 +82,14 @@ export default function ArchivePage() {
           </p>
            <div className="flex gap-4">
             <Image
-              src="/placeholder.jpg"
+              src="/galary/2.jpeg"
               alt="National Integration Camp 2023"
               width={200}
               height={200}
               className="h-auto w-1/2 rounded-lg object-cover shadow-sm"
             />
              <Image
-              src="/vibrant-community-gathering.png"
+              src="/galary/1.jpeg"
               alt="National Integration Camp 2023"
               width={200}
               height={200}
@@ -178,11 +178,11 @@ export default function ArchivePage() {
        <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-50 via-blue-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
         <div className="absolute inset-0">
             <Image
-                src="/youth-empowerment.jpg"
+                src="/galary/11.jpeg"
                 alt="Background"
                 layout="fill"
                 objectFit="cover"
-                className="opacity-10"
+                className="opacity-40"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-neutral-950"></div>
         </div>

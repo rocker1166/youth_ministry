@@ -7,7 +7,7 @@ export function CampBanner() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       <div className="max-w-7xl mx-auto">
-        <Link href="/champ">
+        <Link href="/camp">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-blue-600 to-green-500 p-1 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group">
             {/* Content Container */}
             <div className="bg-white dark:bg-slate-900 rounded-xl p-6 md:p-8">

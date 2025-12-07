@@ -58,7 +58,7 @@ function CampDetailContent() {
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-xl text-gray-600 mb-4">Camp not found</p>
-          <Link href="/champ" className="text-primary hover:underline">
+          <Link href="/camp" className="text-primary hover:underline">
             ← Back to Camps
           </Link>
         </div>
@@ -137,7 +137,7 @@ function CampDetailContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Compact Header */}
         <div className="flex items-center justify-between mb-4">
-          <Link href="/champ" className="inline-flex items-center gap-2 text-primary hover:underline text-sm transition-all hover:gap-3">
+          <Link href="/camp" className="inline-flex items-center gap-2 text-primary hover:underline text-sm transition-all hover:gap-3">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>

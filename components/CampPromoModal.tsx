@@ -71,7 +71,7 @@ export function CampPromoModal() {
           <div className="space-y-4">
             <div className="relative h-64 md:h-full rounded-xl overflow-hidden shadow-lg">
               <Image
-                src="/champ_25/Brochure, NIC, Institute of Youth Affairs_page-0001.jpg"
+                src="/camp_25/Brochure, NIC, Institute of Youth Affairs_page-0001.jpg"
                 alt="12th National Integration Camp"
                 fill
                 className="object-cover"

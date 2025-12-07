@@ -14,7 +14,7 @@ const programs = [
       "8-day residential program bringing together 500+ youth from North-East India to promote unity, peace, and cultural exchange. Participants engage in collaborative activities, cultural exchanges, and team-building exercises to foster national integration and youth leadership.",
     image1: "/galary/1.jpeg",
     image2: "/galary/18.jpeg",
-    link: "/champ",
+    link: "/camp",
   },
   {
     id: "training-workshops",
@@ -24,7 +24,7 @@ const programs = [
       "Comprehensive training programs including Yoga, Aerobics, Self Defence, Drill, Music, Dance, and Career Guidance. Expert faculty from ISRO, DRDO, and leading institutions provide hands-on training to enhance skills and build confidence in young participants.",
     image1: "/galary/5.jpeg",
     image2: "/galary/23.jpeg",
-    link: "/champ",
+    link: "/camp",
   },
   {
     id: "cultural-programs",
@@ -34,7 +34,7 @@ const programs = [
       "Vibrant cultural celebrations showcasing the rich diversity of India's North-Eastern states. Participants perform traditional dances, music, and drama while learning about different cultures, promoting mutual understanding and appreciation of our cultural heritage.",
     image1: "/galary/10.jpeg",
     image2: "/galary/15.jpeg",
-    link: "/champ",
+    link: "/camp",
   },
   {
     id: "science-exhibition",
@@ -44,7 +44,7 @@ const programs = [
       "National-level science exhibition promoting innovation and scientific thinking among youth. Features seminars on Space Science, AI, Defence Research, and Environment. Platform for students to showcase projects and interact with leading scientists and researchers.",
     image1: "/galary/20.jpeg",
     image2: "/galary/25.jpeg",
-    link: "/champ",
+    link: "/camp",
   },
   {
     id: "youth-leadership",
@@ -54,7 +54,7 @@ const programs = [
       "National seminars and leadership training sessions with distinguished speakers from government, defence, and academia. Focus on developing leadership qualities, decision-making skills, and preparing youth for contributing to India's development and Golden future.",
     image1: "/galary/12.jpeg",
     image2: "/galary/28.jpeg",
-    link: "/champ",
+    link: "/camp",
   },
 ]
 

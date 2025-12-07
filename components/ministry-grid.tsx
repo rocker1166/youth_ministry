@@ -105,7 +105,7 @@ export default function MinistryGrid() {
                 {currentEvent.description}
               </p>
 
-              {/* Action Buttons */}
+              {/* Action Buttons
               <div className="flex flex-wrap gap-4 pt-4">
                 <Link href={currentEvent.link}>
                   <Button className="bg-white text-gray-900 hover:bg-gray-100 rounded-full px-6 py-2 font-medium">
@@ -123,6 +123,8 @@ export default function MinistryGrid() {
                   </Button>
                 </Link>
               </div>
+              */}
+              
             </div>
 
             {/* Right - Image Grid with Navigation - Matching Reference Layout */}
