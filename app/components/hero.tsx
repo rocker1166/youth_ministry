@@ -199,10 +199,10 @@ export function Hero() {
           {/* Hero Image - Government Portal Style */}
           <div className="relative">
             {/* Main Image Container */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl ">
-              <div className="aspect-[4/3] bg-gradient-to-br from-primary-100 to-primary-200">
+            <div className=" ">
+              <div className="aspect-[4/3]">
                 <DotLottieReact
-                  src="https://lottie.host/b5f4184c-4ed3-44fe-b163-d32ab7aca0f5/Yq6Fep5PI8.lottie"
+                  src="https://lottie.host/f0d1b15f-922c-4a83-af2a-3a9d7982350f/66Cgpf7FnI.lottie"
                   loop
                   autoplay
                   className="w-full h-full"
