@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { Alert } from "@/components/ui/alert"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Card } from "@/app/components/ui/card"
+import { Alert } from "@/app/components/ui/alert"
 import { Lock, User, AlertCircle, Shield, KeyRound, Info } from "lucide-react"
 import Image from "next/image"
 

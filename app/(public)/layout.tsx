@@ -1,7 +1,7 @@
 import type React from "react"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { Chatbot } from "@/components/chatbot"
+import { Navigation } from "@/app/components/navigation"
+import { Footer } from "@/app/components/footer"
+import { Chatbot } from "@/app/components/chatbot"
 
 export default function PublicLayout({
   children,
@@ -13,7 +13,7 @@ export default function PublicLayout({
       <Navigation />
       <main className="min-h-screen">{children}</main>
       <Footer />
-      <Chatbot />
+      {/*<Chatbot />*/}
     </>
   )
 }

@@ -28,8 +28,8 @@ import {
   ChevronUp
 } from "lucide-react"
 import { CAMP_2025 } from "../data"
-import { useToast } from "@/components/ToastProvider"
-import { CampSkeleton } from "@/components/CampSkeleton"
+import { useToast } from "@/app/components/ToastProvider"
+import { CampSkeleton } from "@/app/components/CampSkeleton"
 
 function CampDetailContent() {
   const params = useParams()

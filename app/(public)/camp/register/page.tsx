@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card } from "@/components/ui/card"
-import { Alert } from "@/components/ui/alert"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Textarea } from "@/app/components/ui/textarea"
+import { Card } from "@/app/components/ui/card"
+import { Alert } from "@/app/components/ui/alert"
 import { CheckCircle2, AlertCircle, Calendar, MapPin, Clock } from "lucide-react"
 import Link from "next/link"
 

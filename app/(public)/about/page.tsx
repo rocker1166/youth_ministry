@@ -1,7 +1,7 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Badge } from "@/app/components/ui/badge"
 import { Users, Target, Heart, Eye, Mail, Phone, Linkedin, Award, BookOpen, Globe } from "lucide-react"
 import Image from "next/image"
 
@@ -73,8 +73,8 @@ export default function AboutPage() {
               About the <span className="text-primary">Institute</span>
             </h1>
             <p className="text-xl text-center text-muted-foreground max-w-3xl mx-auto text-balance">
-              Established as a premier national organization dedicated to youth development, the Institute of Youth
-              Affairs works towards building a capable and confident generation of leaders.
+          The Institute of Youth Affairs is a Digital India initiative dedicated to enhancing youth development
+              through holistic personality development programs, skill enhancement, and career guidance across India.
             </p>
           </div>
         </section>

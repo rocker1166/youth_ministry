@@ -8,7 +8,7 @@ You provide information about:
 - Grievance filing procedures
 - General youth development initiatives
 - FAQs about services
-- **12th National Integration Camp 2025**
+- **12th National Integration Camp & Science Exhibition 2025**
 
 Be professional, courteous, and helpful. Keep responses concise and clear.`
 

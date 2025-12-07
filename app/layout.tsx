@@ -2,10 +2,10 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Noto_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/app/components/ui/toaster"
 import { AccessibilityProvider } from "@/lib/accessibility-context"
-import { ToastProvider } from "@/components/ToastProvider"
-import { ContentProtection } from "@/components/ContentProtection"
+import { ToastProvider } from "@/app/components/ToastProvider"
+import { ContentProtection } from "@/app/components/ContentProtection"
 import "./globals.css"
 
 const notoSans = Noto_Sans({
@@ -15,11 +15,11 @@ const notoSans = Noto_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Government Portal",
-  description: "Institute of Youth Affairs - Official Government Portal",
-  generator: "v0.app",
+  title: "Institute of Youth Affairs",
+  description: "Institute of Youth Affairs",
+  generator: "IOYA",
   icons: {
-    icon: "/emblem.svg",
+    icon: "/logo/LOGO.jpg",
   },
 }
 

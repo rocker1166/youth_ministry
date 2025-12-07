@@ -1,16 +1,16 @@
 "use client"
 
-import { Hero } from "@/components/hero"
-import { Programs } from "@/components/programs"
-import { Impact } from "@/components/impact"
-import { News } from "@/components/news"
-import { CTA } from "@/components/cta"
-import UpcomingEvents from "@/components/upcoming-events"
-import MinistryGrid from "@/components/ministry-grid"
-import GalleryPreview from "@/components/gallery-preview"
-import { PartnerMinistriesTicker } from "@/components/partner-ministries-ticker"
-import { CampBanner } from "@/components/CampBanner"
-import { CampPromoModal } from "@/components/CampPromoModal"
+import { Hero } from "@/app/components/hero"
+import { Programs } from "@/app/components/programs"
+import { Impact } from "@/app/components/impact"
+import { News } from "@/app/components/news"
+import { CTA } from "@/app/components/cta"
+import UpcomingEvents from "@/app/components/upcoming-events"
+import MinistryGrid from "@/app/components/ministry-grid"
+import GalleryPreview from "@/app/components/gallery-preview"
+import { PartnerMinistriesTicker } from "@/app/components/partner-ministries-ticker"
+import { CampBanner } from "@/app/components/CampBanner"
+import { CampPromoModal } from "@/app/components/CampPromoModal"
 
 export default function Home() {
   return (

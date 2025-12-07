@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Calendar, MapPin, Users, Award, BookOpen, GraduationCap, Sparkles, ArrowRight } from "lucide-react"
 import { CAMP_2025 } from "./data"
-import { CampListSkeleton } from "@/components/CampSkeleton"
+import { CampListSkeleton } from "@/app/components/CampSkeleton"
 import { shuffleArray, getGalleryImages } from "./utils"
 
 function ChampPageContent() {
@@ -30,7 +30,7 @@ function ChampPageContent() {
           </div>
           
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
-            National Integration Camp
+            National Integration Camp & Science Exhibition
           </h1>
           
           <p className="text-lg md:text-xl text-primary font-semibold mb-2">
@@ -49,28 +49,7 @@ function ChampPageContent() {
             <ArrowRight className="w-4 h-4" />
           </Link>
 
-          {/* Photo Gallery Section */}
-          {galleryImages.length > 0 && (
-            <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-              <h3 className="text-xl font-bold text-foreground mb-6">Camp Memories</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {galleryImages.map((image, idx) => (
-                  <div
-                    key={idx}
-                    className="relative h-48 rounded-lg overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md hover:shadow-2xl transition-all duration-300 border border-white/20 hover:border-primary/30 group"
-                  >
-                    <Image
-                      src={image}
-                      alt={`Camp Gallery ${idx + 1}`}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        
         </div>
       </section>
 
@@ -237,6 +216,30 @@ function ChampPageContent() {
             </div>
           </div>
         </div>
+  {/* Photo Gallery Section */}
+          {galleryImages.length > 0 && (
+            <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+              <h3 className="text-xl font-bold text-center text-foreground mb-6">Camp Memories</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {galleryImages.map((image, idx) => (
+                  <div
+                    key={idx}
+                    className="relative h-48 rounded-lg overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md hover:shadow-2xl transition-all duration-300 border border-white/20 hover:border-primary/30 group"
+                  >
+                    <Image
+                      src={image}
+                      alt={`Camp Gallery ${idx + 1}`}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+
       </section>
 
       {/* Compact CTA */}

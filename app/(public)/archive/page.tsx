@@ -1,10 +1,10 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import { Timeline } from "@/components/ui/timeline";
+import { Timeline } from "@/app/components/ui/timeline";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { Download, FileText, Book, Video, Archive, Loader2 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
 
 interface ArchiveResource {
   id: number;
