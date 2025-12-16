@@ -99,7 +99,7 @@ export function Hero() {
 
             {/* CTA Buttons - Government Style */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="https://forms.gle/GzCzjRNEWe8Xo3VJ7" target="_blank">
+              <Link href="https://forms.gle/SgYjCxwDWHf5rfv39" target="_blank">
                 <Button size="lg" className="bg-primary hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all group w-full sm:w-auto">
                   Apply for Camp'25
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
