@@ -80,11 +80,11 @@ function CampDetailContent() {
 
   const handleRegister = () => {
     // Open registration form in a new tab
-    window.open(`https://forms.gle/GzCzjRNEWe8Xo3VJ7`, '_blank')
+    window.open(`https://forms.gle/SgYjCxwDWHf5rfv39`, '_blank')
   }
 
   const handleShare = async () => {
-    const url = "https://forms.gle/GzCzjRNEWe8Xo3VJ7"  //gform for registration
+    const url = "https://forms.gle/SgYjCxwDWHf5rfv39"  //gform for registration
     if (navigator.share) {
       try {
         await navigator.share({ title: camp.title, text: camp.theme, url })
@@ -935,7 +935,7 @@ function CampDetailContent() {
                     <strong> Completely FREE for all camp participants!</strong>
                   </p>
                   <div className="flex gap-3">
-                  <Link href="https://forms.gle/GzCzjRNEWe8Xo3VJ7" target="_blank" className="flex-1 px-4 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2">
+                  <Link href="https://forms.gle/SgYjCxwDWHf5rfv39" target="_blank" className="flex-1 px-4 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all shadow-md hover:shadow-lg font-semibold flex items-center justify-center gap-2">
                       <Calendar className="w-4 h-4" />
                       Register for Camp
                     </Link>
